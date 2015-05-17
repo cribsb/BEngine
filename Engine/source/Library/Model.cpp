@@ -30,6 +30,8 @@ namespace Library
 {
 	const aiScene* scene;
 
+	aiVector3D min = aiVector3D();
+	aiVector3D max = aiVector3D();
 	void get_bounding_box(const aiNode* nd, aiVector3D* min, aiVector3D* max)
 
 	{
@@ -135,8 +137,6 @@ namespace Library
 			}
 		}
 
-		aiVector3D min = aiVector3D();
-		aiVector3D max = aiVector3D();
 		min.x = 1e10f;
 		min.y = 1e10f;
 		min.z = 1e10f;
@@ -176,6 +176,16 @@ namespace Library
 			DeleteSceneNode(mRootNode);
 		}		
     }
+
+	DirectX::XMFLOAT3 Model::GetMinCornerBB()
+	{
+		return aiVec3ToXMFloat3(&min);
+	}
+
+	DirectX::XMFLOAT3 Model::GetMaxCornerBB()
+	{
+		return aiVec3ToXMFloat3(&max);
+	}
 
 	void Model::DeleteSceneNode(SceneNode* sceneNode)
 	{

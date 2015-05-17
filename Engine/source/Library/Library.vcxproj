@@ -200,6 +200,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)d</TargetName>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -207,7 +208,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);$(SolutionDir)..\..\external\Effects11\include;$(SolutionDir)..\..\external\DirectXTK\include;$(SolutionDir)..\..\external\assimp\include;$(SolutionDir)..\..\external\Lua\include;$(SolutionDir)..\source\LuaCppInterface\LuaCppInterface</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);$(SolutionDir)..\..\external\Effects11\include;$(SolutionDir)..\..\external\DirectXTK\include;$(SolutionDir)..\..\external\assimp\include;$(SolutionDir)..\..\external\Lua\include;$(SolutionDir)..\source\LuaCppInterface\LuaCppInterface;$(SolutionDir)..\..\external\BulletPhysics\src</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>

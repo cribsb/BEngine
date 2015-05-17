@@ -83,7 +83,7 @@ namespace Rendering
 
 	LuaScript* ps;
 
-	void AnimationDemo::Initialize(LuaScript* s)
+	void AnimationDemo::Initialize(LuaScript* s, btDiscreteDynamicsWorld* world)
     {
         SetCurrentDirectory(Utility::ExecutableDirectory().c_str());
 
@@ -402,7 +402,8 @@ namespace Rendering
 		}
 
 		XMVECTOR movement = XMLoadFloat3(&movementAmount) * LightMovementRate * elapsedTime;
-		mPointLight->SetPosition(mPointLight->PositionVector() + movement);
+		//mPointLight->SetPosition(mPointLight->PositionVector() + movement);
+		mPointLight->SetPosition( XMVectorAdd( mPointLight->PositionVector(), movement ) );
 		mProxyModel->SetPosition(mPointLight->Position());
 	}
 }

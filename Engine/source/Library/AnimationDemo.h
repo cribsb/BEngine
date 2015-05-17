@@ -17,6 +17,7 @@
 #include "DrawableGameComponent.h"
 #include "RenderStateHelper.h"
 #include "LuaScript.h"
+#include "../..\BulletPhysics/src/btBulletDynamicsCommon.h"
 
 class LuaScript;
 
@@ -49,7 +50,7 @@ namespace Rendering
         AnimationDemo(Game& game, Camera& camera);
         ~AnimationDemo();
 
-        virtual void Initialize(LuaScript* s);
+		virtual void Initialize( LuaScript* s, btDiscreteDynamicsWorld* world );
 		virtual void Update(const GameTime& gameTime) override;
         virtual void Draw(const GameTime& gameTime) override;
 

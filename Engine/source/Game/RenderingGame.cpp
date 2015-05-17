@@ -33,6 +33,8 @@
 
 namespace Rendering
 {
+	btDiscreteDynamicsWorld* dynamicsWorld;
+
 	const XMVECTORF32 RenderingGame::BackgroundColor = ColorHelper::CornflowerBlue;
 
 	LuaScript player("Content\\Scripts\\test.lua", true);
@@ -53,7 +55,7 @@ namespace Rendering
 
 
 		// All bullet stuff, to be initialised...
-		/*
+		
 		// Build the broadphase
 		btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 
@@ -65,7 +67,7 @@ namespace Rendering
 		btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 
 		// The world.
-		btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 		dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
 		btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
@@ -116,7 +118,7 @@ namespace Rendering
 		delete collisionConfiguration;
 		delete dispatcher;
 		delete broadphase;
-		*/
+		
     }
 
     RenderingGame::~RenderingGame()
@@ -161,7 +163,7 @@ namespace Rendering
 		Game::Initialize();
 
 		mAnimationDemo = new AnimationDemo(*this, *mCamera);
-		mAnimationDemo->Initialize(&player);
+		mAnimationDemo->Initialize(&player, dynamicsWorld);
 		mComponents.push_back(mAnimationDemo);
 
 		mCamera->SetPosition(player.get<float>("player.pos.x"), player.get<float>("player.pos.y"), player.get<float>("player.pos.z"));

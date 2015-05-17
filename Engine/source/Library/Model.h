@@ -40,6 +40,9 @@ namespace Library
         bool HasMaterials() const;
 		bool HasAnimations() const;
 
+		XMFLOAT3 GetMinCornerBB();
+		XMFLOAT3 GetMaxCornerBB();
+
         const std::vector<Mesh*>& Meshes() const;
         const std::vector<ModelMaterial*>& Materials() const;
 		const std::vector<AnimationClip*>& Animations() const;
