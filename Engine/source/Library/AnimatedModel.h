@@ -42,22 +42,22 @@ namespace DirectX
 
 namespace Rendering
 {
-    class AnimationDemo : public DrawableGameComponent
+    class AnimatedModel : public DrawableGameComponent
     {
-        RTTI_DECLARATIONS(AnimationDemo, DrawableGameComponent)
+        RTTI_DECLARATIONS(AnimatedModel, DrawableGameComponent)
 
     public:
-        AnimationDemo(Game& game, Camera& camera);
-        ~AnimationDemo();
+        AnimatedModel(Game& game, Camera& camera);
+        ~AnimatedModel();
 
 		virtual void Initialize( LuaScript* s, btDiscreteDynamicsWorld* world );
 		virtual void Update(const GameTime& gameTime) override;
         virtual void Draw(const GameTime& gameTime) override;
 
     private:
-        AnimationDemo();
-        AnimationDemo(const AnimationDemo& rhs);
-        AnimationDemo& operator=(const AnimationDemo& rhs);	
+        AnimatedModel();
+        AnimatedModel(const AnimatedModel& rhs);
+        AnimatedModel& operator=(const AnimatedModel& rhs);	
 
 		void UpdateOptions();
 		void UpdateAmbientLight(const GameTime& gameTime);
@@ -95,5 +95,6 @@ namespace Rendering
 		float mXOffset;
 		float mYOffset;
 		float mZOffset;
+		btMotionState* motionState;
     };
 }

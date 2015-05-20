@@ -26,7 +26,7 @@ extern "C" {
 }
 #include "luacppinterface.h"
 
-#include "AnimationDemo.h"
+#include "AnimatedModel.h"
 #include "Keyboard.h"
 class LuaScript {
 private:

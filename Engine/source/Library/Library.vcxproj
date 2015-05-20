@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationClip.h" />
-    <ClInclude Include="AnimationDemo.h" />
+    <ClInclude Include="AnimatedModel.h" />
     <ClInclude Include="AnimationPlayer.h" />
     <ClInclude Include="BasicMaterial.h" />
     <ClInclude Include="BlendStates.h" />
@@ -84,7 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationClip.cpp" />
-    <ClCompile Include="AnimationDemo.cpp" />
+    <ClCompile Include="AnimatedModel.cpp" />
     <ClCompile Include="AnimationPlayer.cpp" />
     <ClCompile Include="BasicMaterial.cpp" />
     <ClCompile Include="BlendStates.cpp" />

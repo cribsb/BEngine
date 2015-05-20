@@ -23,23 +23,11 @@
 
 namespace Library
 {
-
-	XMFLOAT3 min;
-	XMFLOAT3 MIN;
-
     Mesh::Mesh(Model& model, aiMesh& mesh)
         : mModel(model), mMaterial(nullptr), mName(mesh.mName.C_Str()), mVertices(), mNormals(), mTangents(), mBiNormals(), mTextureCoordinates(), mVertexColors(),
 		  mFaceCount(0), mIndices(), mBoneWeights(), mVertexBuffer(), mIndexBuffer()
     {
 		mMaterial = mModel.Materials().at(mesh.mMaterialIndex);
-
-		// Bounding Box
-		/*
-		XMFLOAT3 minVertex = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
-		XMFLOAT3 maxVertex = XMFLOAT3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-		
-		BoundingBox bb;
-		BoundingBox::CreateFromPoints(bb, XMLoadFloat3(XMFLOAT3(min(minVertex.x, *reinterpret_cast<float*>(mesh.mVertices)))), XMLoadFloat3(XMFLOAT3(max(maxVertex.x, *reinterpret_cast<float*>(mesh.mVertices)))));//XMLoadFloat3((XMFLOAT3*)reinterpret_cast<const float*>(&mesh.mVertices[0])), XMLoadFloat3((XMFLOAT3*)reinterpret_cast<const float*>(&mesh.mVertices[mesh.mNumVertices])));*/
 
         // Vertices
         mVertices.reserve(mesh.mNumVertices);

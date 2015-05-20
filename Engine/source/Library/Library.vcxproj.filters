@@ -269,11 +269,11 @@
     <ClInclude Include="SceneNode.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationDemo.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="LuaScript.h">
       <Filter>Header Files\BogaScript</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedModel.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -469,11 +469,11 @@
     <ClCompile Include="SceneNode.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationDemo.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
     <ClCompile Include="LuaScript.cpp">
       <Filter>Source Files\BogaScript</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedModel.cpp">
+      <Filter>Source Files\Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

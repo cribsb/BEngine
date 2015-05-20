@@ -34,7 +34,7 @@ namespace Library
 
 namespace Rendering
 {
-	class AnimationDemo;
+	class AnimatedModel;
 
     class RenderingGame : public Game
     {
@@ -61,6 +61,6 @@ namespace Rendering
 		Skybox* mSkybox;
 		Grid* mGrid;
 
-		AnimationDemo* mAnimationDemo;
+		AnimatedModel* mAnimationDemo;
     };
 }
