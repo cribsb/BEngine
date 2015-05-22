@@ -1,6 +1,6 @@
 player = {
     pos = {
-    x = 20, y = 3, z = 3,
+    x = 20, y = 100, z = 0,
     },
     filename = "Content\\Models\\RunningSoldier.dae",
     animationindex = 0

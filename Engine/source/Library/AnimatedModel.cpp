@@ -145,7 +145,7 @@ namespace Rendering
 		colShape->calculateLocalInertia( 1, fallInertia );
 		motionState = new btDefaultMotionState( btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( mXOffset, mYOffset, mZOffset ) ) );
 		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
-			1,						// mass
+			0.1,					// mass
 			motionState,			// initial position
 			colShape,				// collision shape of body
 			fallInertia				// local inertia

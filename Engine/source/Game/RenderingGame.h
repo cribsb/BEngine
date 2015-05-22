@@ -60,7 +60,9 @@ namespace Rendering
 		RenderStateHelper* mRenderStateHelper;
 		Skybox* mSkybox;
 		Grid* mGrid;
+		bool inited = false;
 
+		btDiscreteDynamicsWorld* dynamicsWorld;
 		AnimatedModel* mAnimationDemo;
     };
 }

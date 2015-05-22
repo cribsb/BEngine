@@ -33,7 +33,7 @@
 
 namespace Rendering
 {
-	btDiscreteDynamicsWorld* dynamicsWorld;
+
 
 	const XMVECTORF32 RenderingGame::BackgroundColor = ColorHelper::CornflowerBlue;
 
@@ -43,17 +43,8 @@ namespace Rendering
 		: Game( instance, windowClass, windowTitle, showCommand ),
 		mFpsComponent( nullptr ), mGrid( nullptr ),
 		mDirectInput( nullptr ), mKeyboard( nullptr ), mMouse( nullptr ), mRenderStateHelper( nullptr ), mSkybox( nullptr ),
-		mAnimationDemo( nullptr )
+		mAnimationDemo( nullptr ), dynamicsWorld( nullptr )
 	{
-		mDepthStencilBufferEnabled = true;
-		mMultiSamplingEnabled = true;
-
-		AllocConsole();
-		freopen( "CONIN$", "r", stdin );
-		freopen( "CONOUT$", "w", stdout );
-		freopen( "CONOUT$", "w", stderr );
-
-
 		// All bullet stuff, to be initialised...
 
 		// Build the broadphase
@@ -80,17 +71,15 @@ namespace Rendering
 		dynamicsWorld->addRigidBody( groundRigidBody );
 
 		dynamicsWorld->removeRigidBody( groundRigidBody );
-		delete groundRigidBody->getMotionState();
-		delete groundRigidBody;
+		inited = true;
 
-		delete groundShape;
+		mDepthStencilBufferEnabled = true;
+		mMultiSamplingEnabled = true;
 
-		delete dynamicsWorld;
-		delete solver;
-		delete collisionConfiguration;
-		delete dispatcher;
-		delete broadphase;
-
+		AllocConsole();
+		freopen( "CONIN$", "r", stdin );
+		freopen( "CONOUT$", "w", stdout );
+		freopen( "CONOUT$", "w", stderr );
 	}
 
 	RenderingGame::~RenderingGame()
@@ -162,15 +151,17 @@ namespace Rendering
 	{
 		mFpsComponent->Update( gameTime );
 
-		dynamicsWorld->stepSimulation( 1 / 60.0f );
-
 		if ( mKeyboard->WasKeyPressedThisFrame( DIK_ESCAPE ) )
 		{
 			Exit();
 		}
 		Game::Update( gameTime );
-		//player.L_Update(gameTime.ElapsedGameTime());
+		player.L_Update(gameTime.ElapsedGameTime());
 		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ) + 8, player.get<float>( "player.pos.z" ) + 2 );
+		if ( dynamicsWorld != nullptr )
+		{
+			dynamicsWorld->stepSimulation( 1 / 1.0f );
+		}
 	}
 
 	void RenderingGame::Draw( const GameTime &gameTime )
