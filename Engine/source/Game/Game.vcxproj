@@ -62,7 +62,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\lib;$(SolutionDir)..\..\external\Effects11\lib\x86;$(SolutionDir)..\..\external\Lua;$(SolutionDir)..\..\external\DirectXTK\lib\Win32\Debug;$(SolutionDir)..\..\external\assimp\lib\assimp_debug-dll_win32;$(SolutionDir)..\source\LuaCppInterface\Debug;%(AdditionalLibraryDirectories);$(SolutionDir)..\..\external\BulletPhysics\bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;d3dcompiler.lib;Lua52.lib;LuaCppInterface.lib;Effects11d.lib;dinput8.lib;dxguid.lib;Shlwapi.lib;assimpd.lib;Libraryd.lib;BulletCollision_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;LinearMath_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;d3dcompiler.lib;Lua52.lib;Effects11d.lib;dinput8.lib;dxguid.lib;Shlwapi.lib;assimpd.lib;Libraryd.lib;BulletCollision_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;LinearMath_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>mkdir "$(OutDir)Content"
@@ -98,7 +98,7 @@ IF EXIST "$(ProjectDir)content" xcopy /E /Y "$(ProjectDir)Content" "$(OutDir)Con
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(WindowsSDK_LibraryPath_x86);$(SolutionDir)..\lib;$(SolutionDir)..\..\external\Effects11\lib\x86;$(SolutionDir)..\..\external\Lua;$(SolutionDir)..\..\external\DirectXTK\lib\Win32\Release;$(SolutionDir)..\..\external\assimp\lib\assimp_release-dll_win32;$(SolutionDir)..\source\LuaCppInterface\Debug;%(AdditionalLibraryDirectories);$(SolutionDir)..\..\external\BulletPhysics\bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;d3dcompiler.lib;Lua52.lib;LuaCppInterface.lib;Effects11.lib;dinput8.lib;dxguid.lib;Shlwapi.lib;assimp.lib;Library.lib;BulletCollision_vs2010.lib;BulletDynamics_vs2010.lib;LinearMath_vs2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;d3dcompiler.lib;Lua52.lib;Effects11.lib;dinput8.lib;dxguid.lib;Shlwapi.lib;assimp.lib;Library.lib;BulletCollision_vs2010.lib;BulletDynamics_vs2010.lib;LinearMath_vs2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>mkdir "$(OutDir)Content"
