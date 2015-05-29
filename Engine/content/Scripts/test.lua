@@ -1,6 +1,6 @@
 player = {
     pos = {
-    x = 20, y = 3, z = 6,
+    x = 0, y = 10, z = 0,
     },
     filename = "Content\\Models\\RunningSoldier.dae",
     animationindex = 0
@@ -23,4 +23,5 @@ function Update(d)
     if keyPressed("d") == 1 then
         player.pos.x = player.pos.x - 10*d
     end
+    --write(player.pos.y)
 end

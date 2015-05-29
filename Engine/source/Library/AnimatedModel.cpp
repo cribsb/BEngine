@@ -143,9 +143,9 @@ namespace Rendering
 		btCollisionShape* colShape = new btBoxShape( btVector3( mSkinnedModel->GetMaxCornerBB().x - mSkinnedModel->GetMinCornerBB().x, mSkinnedModel->GetMaxCornerBB().y - mSkinnedModel->GetMinCornerBB().y, mSkinnedModel->GetMaxCornerBB().z - mSkinnedModel->GetMinCornerBB().z ) );
 		btVector3 fallInertia( 0, 0, 0 );
 		colShape->calculateLocalInertia( 1, fallInertia );
-		motionState = new btDefaultMotionState( btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( mXOffset, mYOffset, mZOffset ) ) );
+		motionState = new btDefaultMotionState( btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, 10, 0 ) ) );
 		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
-			0.1,					// mass
+			1,					// mass
 			motionState,			// initial position
 			colShape,				// collision shape of body
 			fallInertia				// local inertia
@@ -187,13 +187,15 @@ namespace Rendering
 
 	void AnimatedModel::Draw( const GameTime& gameTime )
 	{
-		//mXOffset = ps->get<float>( "player.pos.x" );
-		//mYOffset = ps->get<float>( "player.pos.y" );
-		//mZOffset = ps->get<float>( "player.pos.z" );
-
 		btTransform trans;
 		motionState->getWorldTransform( trans );
+		ps->setLuaVariable( "player.pos.x", trans.getOrigin().getX() );
+		ps->setLuaVariable( "player.pos.y", trans.getOrigin().getY() );
+		ps->setLuaVariable( "player.pos.z", trans.getOrigin().getZ() );
 
+		mXOffset = ps->get<float>( "player.pos.x" );
+		mYOffset = ps->get<float>( "player.pos.y" );
+		mZOffset = ps->get<float>( "player.pos.z" );
 
 		ID3D11DeviceContext* direct3DDeviceContext = mGame->Direct3DDeviceContext();
 		direct3DDeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
@@ -203,7 +205,7 @@ namespace Rendering
 		direct3DDeviceContext->IASetInputLayout( inputLayout );
 
 		XMMATRIX worldMatrix = XMLoadFloat4x4( &mWorldMatrix );
-		MatrixHelper::SetTranslation( worldMatrix, XMFLOAT3( trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ() ) );
+		MatrixHelper::SetTranslation( worldMatrix, /*XMFLOAT3( mXOffset, mYOffset, mZOffset ) );//*/XMFLOAT3( trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ() ) );
 		XMMATRIX wvp = worldMatrix * mCamera->ViewMatrix() * mCamera->ProjectionMatrix();
 		XMVECTOR ambientColor = XMLoadColor( &mAmbientColor );
 		XMVECTOR specularColor = XMLoadColor( &mSpecularColor );

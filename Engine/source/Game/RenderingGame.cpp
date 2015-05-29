@@ -59,9 +59,9 @@ namespace Rendering
 
 		// The world.
 		dynamicsWorld = new btDiscreteDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration );
-		dynamicsWorld->setGravity( btVector3( 0, -10, 0 ) );
+		dynamicsWorld->setGravity( btVector3( 0, -1, 0 ) );
 
-		btCollisionShape* groundShape = new btStaticPlaneShape( btVector3( 0, 1, 0 ), 1 );
+		btCollisionShape* groundShape = new btBoxShape( btVector3( 100, 1, 100 ) );
 
 
 		btDefaultMotionState* groundMotionState = new btDefaultMotionState( btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, -1, 0 ) ) );
@@ -70,7 +70,6 @@ namespace Rendering
 		btRigidBody* groundRigidBody = new btRigidBody( groundRigidBodyCI );
 		dynamicsWorld->addRigidBody( groundRigidBody );
 
-		dynamicsWorld->removeRigidBody( groundRigidBody );
 		inited = true;
 
 		mDepthStencilBufferEnabled = true;
@@ -157,10 +156,10 @@ namespace Rendering
 		}
 		Game::Update( gameTime );
 		player.L_Update(gameTime.ElapsedGameTime());
-		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ) + 8, player.get<float>( "player.pos.z" ) + 2 );
+		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ) + 8, player.get<float>( "player.pos.z" ) + 10 );
 		if ( dynamicsWorld != nullptr )
 		{
-			dynamicsWorld->stepSimulation( 1 / 1.0f );
+			dynamicsWorld->stepSimulation( 1 / 60.0f );
 		}
 	}
 
