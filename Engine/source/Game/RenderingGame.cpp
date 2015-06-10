@@ -135,7 +135,7 @@ namespace Rendering
 		DeleteObject( mKeyboard );
 		DeleteObject( mMouse );
 		DeleteObject( mSkybox )
-			DeleteObject( mGrid );
+		DeleteObject( mGrid );
 		DeleteObject( mFpsComponent );
 		DeleteObject( mCamera );
 
@@ -157,10 +157,7 @@ namespace Rendering
 		Game::Update( gameTime );
 		player.L_Update(gameTime.ElapsedGameTime());
 		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ) + 8, player.get<float>( "player.pos.z" ) + 10 );
-		if ( dynamicsWorld != nullptr )
-		{
-			dynamicsWorld->stepSimulation( 1 / 60.0f );
-		}
+		dynamicsWorld->stepSimulation( 1/60.0f );
 	}
 
 	void RenderingGame::Draw( const GameTime &gameTime )

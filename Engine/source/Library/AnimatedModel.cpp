@@ -41,7 +41,7 @@ namespace Rendering
 {
 	RTTI_DEFINITIONS( AnimatedModel )
 
-		const float AnimatedModel::LightModulationRate = UCHAR_MAX;
+	const float AnimatedModel::LightModulationRate = UCHAR_MAX;
 	const float AnimatedModel::LightMovementRate = 10.0f;
 
 	AnimatedModel::AnimatedModel( Game& game, Camera& camera )
