@@ -41,16 +41,16 @@ namespace Rendering
 {
 	RTTI_DEFINITIONS( AnimatedModel )
 
-	const float AnimatedModel::LightModulationRate = UCHAR_MAX;
-	const float AnimatedModel::LightMovementRate = 10.0f;
+	//const float AnimatedModel::LightModulationRate = UCHAR_MAX;
+	//const float AnimatedModel::LightMovementRate = 10.0f;
 
 	AnimatedModel::AnimatedModel( Game& game, Camera& camera )
 		: DrawableGameComponent( game, camera ),
 		mMaterial( nullptr ), mEffect( nullptr ), mWorldMatrix( MatrixHelper::Identity ),
 		mVertexBuffers(), mIndexBuffers(), mIndexCounts(), mColorTextures(),
-		mKeyboard( nullptr ), mAmbientColor( reinterpret_cast<const float*>(&ColorHelper::White) ), mPointLight( nullptr ),
-		mSpecularColor( 1.0f, 1.0f, 1.0f, 1.0f ), mSpecularPower( 25.0f ), mSkinnedModel( nullptr ), mAnimationPlayer( nullptr ),
-		mRenderStateHelper( game ), mProxyModel( nullptr ), mSpriteBatch( nullptr ), mSpriteFont( nullptr ), mTextPosition( 0.0f, 40.0f ), mManualAdvanceMode( false )
+		mKeyboard( nullptr ), mAmbientColor( reinterpret_cast<const float*>(&ColorHelper::White) ), /*mPointLight( nullptr ),
+		mSpecularColor( 1.0f, 1.0f, 1.0f, 1.0f ), mSpecularPower( 25.0f ), mAnimationPlayer( nullptr ),
+		mProxyModel( nullptr ), mSpriteBatch( nullptr ), mSpriteFont( nullptr ), mTextPosition( 0.0f, 40.0f ), */mRenderStateHelper( game ), mManualAdvanceMode( false ), mSkinnedModel( nullptr )
 	{ }
 
 	AnimatedModel::~AnimatedModel()
@@ -70,21 +70,23 @@ namespace Rendering
 			ReleaseObject( colorTexture );
 		}
 
-		DeleteObject( mSpriteFont );
-		DeleteObject( mSpriteBatch );
+		//DeleteObject( mSpriteFont );
+		//DeleteObject( mSpriteBatch );
 		DeleteObject( mSkinnedModel );
 		DeleteObject( mAnimationPlayer );
-		DeleteObject( mProxyModel );
-		DeleteObject( mPointLight );
+		//DeleteObject( mProxyModel );
+		//DeleteObject( mPointLight );
 		DeleteObject( mMaterial );
 		DeleteObject( mEffect );
 	}
 
 	LuaScript* ps;
 
-		void AnimatedModel::Initialize( LuaScript* s, btDiscreteDynamicsWorld* world )
+	void AnimatedModel::Initialize( LuaScript* s, btDiscreteDynamicsWorld* world, SkinnedModelMaterial* mat )
 	{
 		SetCurrentDirectory( Utility::ExecutableDirectory().c_str() );
+
+		mMat = mat;
 
 		// Load the model
 		ps = s;
@@ -153,9 +155,9 @@ namespace Rendering
 		btRigidBody* rigidBody = new btRigidBody( rigidBodyCI );
 		world->addRigidBody( rigidBody );
 
-		mPointLight = new PointLight( *mGame );
-		mPointLight->SetRadius( 500.0f );
-		mPointLight->SetPosition( 5.0f, 0.0f, 10.0f );
+		//mPointLight = new PointLight( *mGame );
+		//mPointLight->SetRadius( 500.0f );
+		//mPointLight->SetPosition( 5.0f, 0.0f, 10.0f );
 
 		mKeyboard = (Keyboard*)mGame->Services().GetService( Keyboard::TypeIdClass() );
 		assert( mKeyboard != nullptr );
@@ -163,26 +165,31 @@ namespace Rendering
 		mAnimationPlayer = new AnimationPlayer( *mGame, *mSkinnedModel, true );
 		mAnimationPlayer->StartClip( *(mSkinnedModel->Animations().at( 0 )) );
 
-		mProxyModel = new ProxyModel( *mGame, *mCamera, "Content\\Models\\PointLightProxy.obj", 0.5f );
-		mProxyModel->Initialize();
+		//mProxyModel = new ProxyModel( *mGame, *mCamera, "Content\\Models\\PointLightProxy.obj", 0.5f );
+		//mProxyModel->Initialize();
 
-		mSpriteBatch = new SpriteBatch( mGame->Direct3DDeviceContext() );
-		mSpriteFont = new SpriteFont( mGame->Direct3DDevice(), L"Content\\Fonts\\Arial_14_Regular.spritefont" );
+		//mSpriteBatch = new SpriteBatch( mGame->Direct3DDeviceContext() );
+		//mSpriteFont = new SpriteFont( mGame->Direct3DDevice(), L"Content\\Fonts\\Arial_14_Regular.spritefont" );
+	}
+
+	XMFLOAT4X4 AnimatedModel::getWorldMatrix()
+	{
+		return mWorldMatrix;
 	}
 
 	void AnimatedModel::Update( const GameTime& gameTime )
 	{
-		UpdateOptions();
-		UpdateAmbientLight( gameTime );
-		UpdatePointLight( gameTime );
-		UpdateSpecularLight( gameTime );
+		//UpdateOptions();
+		//UpdateAmbientLight( gameTime );
+		//UpdatePointLight( gameTime );
+		//UpdateSpecularLight( gameTime );
 
 		if ( mManualAdvanceMode == false )
 		{
 			mAnimationPlayer->Update( gameTime );
 		}
 
-		mProxyModel->Update( gameTime );
+		//mProxyModel->Update( gameTime );
 	}
 
 	void AnimatedModel::Draw( const GameTime& gameTime )
@@ -207,8 +214,8 @@ namespace Rendering
 		XMMATRIX worldMatrix = XMLoadFloat4x4( &mWorldMatrix );
 		MatrixHelper::SetTranslation( worldMatrix, /*XMFLOAT3( mXOffset, mYOffset, mZOffset ) );//*/XMFLOAT3( trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ() ) );
 		XMMATRIX wvp = worldMatrix * mCamera->ViewMatrix() * mCamera->ProjectionMatrix();
-		XMVECTOR ambientColor = XMLoadColor( &mAmbientColor );
-		XMVECTOR specularColor = XMLoadColor( &mSpecularColor );
+		//XMVECTOR ambientColor = XMLoadColor( &mAmbientColor );
+		//XMVECTOR specularColor = XMLoadColor( &mSpecularColor );
 
 		UINT stride = mMaterial->VertexSize();
 		UINT offset = 0;
@@ -223,16 +230,16 @@ namespace Rendering
 			direct3DDeviceContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
 			direct3DDeviceContext->IASetIndexBuffer( indexBuffer, DXGI_FORMAT_R32_UINT, 0 );
 
-			mMaterial->WorldViewProjection() << wvp;
-			mMaterial->World() << worldMatrix;
-			mMaterial->SpecularColor() << specularColor;
-			mMaterial->SpecularPower() << mSpecularPower;
-			mMaterial->AmbientColor() << ambientColor;
-			mMaterial->LightColor() << mPointLight->ColorVector();
-			mMaterial->LightPosition() << mPointLight->PositionVector();
-			mMaterial->LightRadius() << mPointLight->Radius();
-			mMaterial->ColorTexture() << colorTexture;
-			mMaterial->CameraPosition() << mCamera->PositionVector();
+			mMaterial->WorldViewProjection() << mMat->WorldViewProjection;
+			mMaterial->World() << mMat->World;
+			mMaterial->SpecularColor() << mMat->SpecularColor;
+			mMaterial->SpecularPower() << mMat->SpecularPower;
+			mMaterial->AmbientColor() << mMat->AmbientColor;
+			mMaterial->LightColor() << mMat->LightColor;
+			mMaterial->LightPosition() << mMat->LightPosition;
+			mMaterial->LightRadius() << mMat->LightRadius;
+			mMaterial->ColorTexture() << mMat->ColorTexture;
+			mMaterial->CameraPosition() << mMat->CameraPosition;
 			mMaterial->BoneTransforms() << mAnimationPlayer->BoneTransforms();
 
 			pass->Apply( 0, direct3DDeviceContext );
@@ -240,35 +247,35 @@ namespace Rendering
 			direct3DDeviceContext->DrawIndexed( indexCount, 0, 0 );
 		}
 
-		mProxyModel->Draw( gameTime );
+		//mProxyModel->Draw( gameTime );
 
 		mRenderStateHelper.SaveAll();
-		mSpriteBatch->Begin();
+		//mSpriteBatch->Begin();
 
-		std::wostringstream helpLabel;
-		helpLabel << std::setprecision( 5 ) << L"Ambient Intensity (+PgUp/-PgDn): " << mAmbientColor.a << "\n";
-		helpLabel << L"Point Light Intensity (+Home/-End): " << mPointLight->Color().a << "\n";
-		helpLabel << L"Specular Power (+Insert/-Delete): " << mSpecularPower << "\n";
-		helpLabel << L"Move Point Light (8/2, 4/6, 3/9)\n";
-		helpLabel << "Frame Advance Mode (Enter): " << (mManualAdvanceMode ? "Manual" : "Auto") << "\nAnimation Time: " << mAnimationPlayer->CurrentTime()
-			<< "\nFrame Interpolation (I): " << (mAnimationPlayer->InterpolationEnabled() ? "On" : "Off") << "\nGo to Bind Pose (B)";
+		//std::wostringstream helpLabel;
+		//helpLabel << std::setprecision( 5 ) << L"Ambient Intensity (+PgUp/-PgDn): " << mAmbientColor.a << "\n";
+		//helpLabel << L"Point Light Intensity (+Home/-End): " << mPointLight->Color().a << "\n";
+		//helpLabel << L"Specular Power (+Insert/-Delete): " << mSpecularPower << "\n";
+		//helpLabel << L"Move Point Light (8/2, 4/6, 3/9)\n";
+		//helpLabel << "Frame Advance Mode (Enter): " << (mManualAdvanceMode ? "Manual" : "Auto") << "\nAnimation Time: " << mAnimationPlayer->CurrentTime()
+			//<< "\nFrame Interpolation (I): " << (mAnimationPlayer->InterpolationEnabled() ? "On" : "Off") << "\nGo to Bind Pose (B)";
 
-		if ( mManualAdvanceMode )
-		{
-			helpLabel << "\nCurrent Keyframe (Space): " << mAnimationPlayer->CurrentKeyframe();
-		}
-		else
-		{
-			helpLabel << "\nPause / Resume(P)";
-		}
+		//if ( mManualAdvanceMode )
+		//{
+			//helpLabel << "\nCurrent Keyframe (Space): " << mAnimationPlayer->CurrentKeyframe();
+		//}
+		//else
+		//{
+			//helpLabel << "\nPause / Resume(P)";
+		//}
 
-		mSpriteFont->DrawString( mSpriteBatch, helpLabel.str().c_str(), mTextPosition );
+		//mSpriteFont->DrawString( mSpriteBatch, helpLabel.str().c_str(), mTextPosition );
 
-		mSpriteBatch->End();
+		//mSpriteBatch->End();
 		mRenderStateHelper.RestoreAll();
 	}
 
-	void AnimatedModel::UpdateOptions()
+	/*void AnimatedModel::UpdateOptions()
 	{
 		if ( mKeyboard != nullptr )
 		{
@@ -424,5 +431,5 @@ namespace Rendering
 		//mPointLight->SetPosition(mPointLight->PositionVector() + movement);
 		mPointLight->SetPosition( XMVectorAdd( mPointLight->PositionVector(), movement ) );
 		mProxyModel->SetPosition( mPointLight->Position() );
-	}
+	}*/
 }

@@ -38,6 +38,8 @@ namespace Library
 
         virtual void Draw(const GameTime& gameTime);
 
+		
+
     protected:
         bool mVisible;
         Camera* mCamera;

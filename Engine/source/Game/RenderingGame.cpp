@@ -121,8 +121,10 @@ namespace Rendering
 
 		Game::Initialize();
 
+		SkinnedModelMaterial* animationMaterial;
+
 		mAnimationDemo = new AnimatedModel( *this, *mCamera );
-		mAnimationDemo->Initialize( &player, dynamicsWorld );
+		mAnimationDemo->Initialize( &player, dynamicsWorld, animationMaterial );
 		mComponents.push_back( mAnimationDemo );
 
 		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ), player.get<float>( "player.pos.z" ) );
@@ -157,6 +159,7 @@ namespace Rendering
 		Game::Update( gameTime );
 		player.L_Update(gameTime.ElapsedGameTime());
 		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ) + 8, player.get<float>( "player.pos.z" ) + 10 );
+		mCamera->ApplyRotation(mAnimationDemo->getWorldMatrix());
 		dynamicsWorld->stepSimulation( 1/60.0f );
 	}
 

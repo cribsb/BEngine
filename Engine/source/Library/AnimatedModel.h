@@ -50,31 +50,33 @@ namespace Rendering
         AnimatedModel(Game& game, Camera& camera);
         ~AnimatedModel();
 
-		virtual void Initialize( LuaScript* s, btDiscreteDynamicsWorld* world );
+		virtual void Initialize( LuaScript* s, btDiscreteDynamicsWorld* world, SkinnedModelMaterial* mat );
 		virtual void Update(const GameTime& gameTime) override;
         virtual void Draw(const GameTime& gameTime) override;
+		XMFLOAT4X4 getWorldMatrix();
 
     private:
         AnimatedModel();
         AnimatedModel(const AnimatedModel& rhs);
         AnimatedModel& operator=(const AnimatedModel& rhs);	
 
-		void UpdateOptions();
-		void UpdateAmbientLight(const GameTime& gameTime);
-		void UpdatePointLight(const GameTime& gameTime);
-		void UpdateSpecularLight(const GameTime& gameTime);
+		//void UpdateOptions();
+		//void UpdateAmbientLight(const GameTime& gameTime);
+		//void UpdatePointLight(const GameTime& gameTime);
+		//void UpdateSpecularLight(const GameTime& gameTime);
 
 		static const float LightModulationRate;
 		static const float LightMovementRate;
 
         Effect* mEffect;
+		SkinnedModelMaterial* mMat;
 		SkinnedModelMaterial* mMaterial;
 
 		Keyboard* mKeyboard;
 		XMCOLOR mAmbientColor;
-		PointLight* mPointLight;
-		XMCOLOR mSpecularColor;
-		float mSpecularPower;
+		//PointLight* mPointLight;
+		//XMCOLOR mSpecularColor;
+		//float mSpecularPower;
         XMFLOAT4X4 mWorldMatrix;
 
 		std::vector<ID3D11Buffer*> mVertexBuffers;
@@ -86,10 +88,10 @@ namespace Rendering
 		AnimationPlayer* mAnimationPlayer;		
 
 		RenderStateHelper mRenderStateHelper;
-		ProxyModel* mProxyModel;
-		SpriteBatch* mSpriteBatch;
-		SpriteFont* mSpriteFont;
-		XMFLOAT2 mTextPosition;
+		//ProxyModel* mProxyModel;
+		//SpriteBatch* mSpriteBatch;
+		//SpriteFont* mSpriteFont;
+		//XMFLOAT2 mTextPosition;
 		bool mManualAdvanceMode;
 
 		float mXOffset;
