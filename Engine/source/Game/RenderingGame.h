@@ -18,6 +18,7 @@
 #include "Game.h"
 #include "LuaScript.h"
 #include <stdio.h>
+#include "PointLight.h"
 
 using namespace Library;
 
@@ -30,6 +31,7 @@ namespace Library
 	class RenderStateHelper;
 	class Skybox;
 	class Grid;
+	class PointLight;
 }
 
 namespace Rendering
@@ -64,5 +66,7 @@ namespace Rendering
 
 		btDiscreteDynamicsWorld* dynamicsWorld;
 		AnimatedModel* mAnimationDemo;
+
+		PointLight* mPoint;
     };
 }

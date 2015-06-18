@@ -32,6 +32,7 @@ namespace Library
 	class SkinnedModelMaterial;
 	class Model;
 	class AnimationPlayer;
+	class ColorHelper;
 }
 
 namespace DirectX
@@ -50,12 +51,14 @@ namespace Rendering
         AnimatedModel(Game& game, Camera& camera);
         ~AnimatedModel();
 
-		virtual void Initialize( LuaScript* s, btDiscreteDynamicsWorld* world, SkinnedModelMaterial* mat );
+		virtual void Initialize(LuaScript* s, btDiscreteDynamicsWorld* world, std::vector<GameComponent*> Components, XMCOLOR ambientColor = XMCOLOR(1.0f,1.0f,1.0f,1.0f));
 		virtual void Update(const GameTime& gameTime) override;
         virtual void Draw(const GameTime& gameTime) override;
 		XMFLOAT4X4 getWorldMatrix();
 
     private:
+		std::vector<GameComponent*> mComponents;
+
         AnimatedModel();
         AnimatedModel(const AnimatedModel& rhs);
         AnimatedModel& operator=(const AnimatedModel& rhs);	
@@ -69,14 +72,14 @@ namespace Rendering
 		static const float LightMovementRate;
 
         Effect* mEffect;
-		SkinnedModelMaterial* mMat;
 		SkinnedModelMaterial* mMaterial;
 
 		Keyboard* mKeyboard;
 		XMCOLOR mAmbientColor;
 		//PointLight* mPointLight;
-		//XMCOLOR mSpecularColor;
-		//float mSpecularPower;
+		XMVECTOR mColorVector;
+		XMCOLOR mSpecularColor;
+		float mSpecularPower;
         XMFLOAT4X4 mWorldMatrix;
 
 		std::vector<ID3D11Buffer*> mVertexBuffers;

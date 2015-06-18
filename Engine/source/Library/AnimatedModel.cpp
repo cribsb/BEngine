@@ -36,6 +36,7 @@
 #include <iomanip>
 #include "Shlwapi.h"
 #include <fstream>
+#include "DirectionalLight.h"
 
 namespace Rendering
 {
@@ -48,9 +49,9 @@ namespace Rendering
 		: DrawableGameComponent( game, camera ),
 		mMaterial( nullptr ), mEffect( nullptr ), mWorldMatrix( MatrixHelper::Identity ),
 		mVertexBuffers(), mIndexBuffers(), mIndexCounts(), mColorTextures(),
-		mKeyboard( nullptr ), mAmbientColor( reinterpret_cast<const float*>(&ColorHelper::White) ), /*mPointLight( nullptr ),
-		mSpecularColor( 1.0f, 1.0f, 1.0f, 1.0f ), mSpecularPower( 25.0f ), mAnimationPlayer( nullptr ),
-		mProxyModel( nullptr ), mSpriteBatch( nullptr ), mSpriteFont( nullptr ), mTextPosition( 0.0f, 40.0f ), */mRenderStateHelper( game ), mManualAdvanceMode( false ), mSkinnedModel( nullptr )
+		mKeyboard(nullptr), mAmbientColor(reinterpret_cast<const float*>(&ColorHelper::White)), mSpecularColor(1.0f, 1.0f, 1.0f, 1.0f), mSpecularPower(25.0f), mAnimationPlayer(nullptr), 
+		/*mPointLight( nullptr ), mProxyModel( nullptr ), mSpriteBatch( nullptr ), mSpriteFont( nullptr ), mTextPosition( 0.0f, 40.0f ), */
+		mRenderStateHelper(game), mManualAdvanceMode(false), mSkinnedModel(nullptr)
 	{ }
 
 	AnimatedModel::~AnimatedModel()
@@ -82,11 +83,25 @@ namespace Rendering
 
 	LuaScript* ps;
 
-	void AnimatedModel::Initialize( LuaScript* s, btDiscreteDynamicsWorld* world, SkinnedModelMaterial* mat )
+	void AnimatedModel::Initialize(LuaScript* s, btDiscreteDynamicsWorld* world, std::vector<GameComponent*> Components, XMCOLOR ambientColor)
 	{
 		SetCurrentDirectory( Utility::ExecutableDirectory().c_str() );
+		mComponents = Components;
+		mAmbientColor = ambientColor;
+		Light* l;
 
-		mMat = mat;
+		unsigned int d = mComponents.size();
+
+		for (unsigned int i = 0; i < d; ++i)
+		{
+			//if (mComponents.at(i)->As<Light>())
+			//{
+			//	mColorVector = mComponents.at(i)->As<Light>()->ColorVector();
+			//}
+
+
+
+		}
 
 		// Load the model
 		ps = s;
@@ -214,8 +229,8 @@ namespace Rendering
 		XMMATRIX worldMatrix = XMLoadFloat4x4( &mWorldMatrix );
 		MatrixHelper::SetTranslation( worldMatrix, /*XMFLOAT3( mXOffset, mYOffset, mZOffset ) );//*/XMFLOAT3( trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ() ) );
 		XMMATRIX wvp = worldMatrix * mCamera->ViewMatrix() * mCamera->ProjectionMatrix();
-		//XMVECTOR ambientColor = XMLoadColor( &mAmbientColor );
-		//XMVECTOR specularColor = XMLoadColor( &mSpecularColor );
+		XMVECTOR ambientColor = XMLoadColor( &mAmbientColor );
+		XMVECTOR specularColor = XMLoadColor( &mSpecularColor );
 
 		UINT stride = mMaterial->VertexSize();
 		UINT offset = 0;
@@ -230,16 +245,16 @@ namespace Rendering
 			direct3DDeviceContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
 			direct3DDeviceContext->IASetIndexBuffer( indexBuffer, DXGI_FORMAT_R32_UINT, 0 );
 
-			mMaterial->WorldViewProjection() << mMat->WorldViewProjection;
-			mMaterial->World() << mMat->World;
-			mMaterial->SpecularColor() << mMat->SpecularColor;
-			mMaterial->SpecularPower() << mMat->SpecularPower;
-			mMaterial->AmbientColor() << mMat->AmbientColor;
-			mMaterial->LightColor() << mMat->LightColor;
-			mMaterial->LightPosition() << mMat->LightPosition;
-			mMaterial->LightRadius() << mMat->LightRadius;
-			mMaterial->ColorTexture() << mMat->ColorTexture;
-			mMaterial->CameraPosition() << mMat->CameraPosition;
+			mMaterial->WorldViewProjection() << wvp;
+			mMaterial->World() << worldMatrix;
+			mMaterial->SpecularColor() << specularColor;
+			mMaterial->SpecularPower() << mSpecularPower;
+			mMaterial->AmbientColor() << ambientColor;
+			mMaterial->LightColor() << mColorVector;
+			//mMaterial->LightPosition() << mMat->LightPosition;
+			//mMaterial->LightRadius() << mMat->LightRadius;
+			//mMaterial->ColorTexture() << mMat->ColorTexture;
+			//mMaterial->CameraPosition() << mMat->CameraPosition;
 			mMaterial->BoneTransforms() << mAnimationPlayer->BoneTransforms();
 
 			pass->Apply( 0, direct3DDeviceContext );

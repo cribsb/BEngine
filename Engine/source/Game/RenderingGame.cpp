@@ -119,12 +119,17 @@ namespace Rendering
 
 		mRenderStateHelper = new RenderStateHelper( *this );
 
+		mPoint = new PointLight(*this);
+		mPoint->SetRadius( 500.0f );
+		mPoint->SetPosition( 5.0f, 0.0f, 10.0f );
+		mPoint->SetColor(1.0f, 2.0f, 0.0f, 1.0f);
+		mComponents.push_back(mPoint);
+
+
 		Game::Initialize();
 
-		SkinnedModelMaterial* animationMaterial;
-
 		mAnimationDemo = new AnimatedModel( *this, *mCamera );
-		mAnimationDemo->Initialize( &player, dynamicsWorld, animationMaterial );
+		mAnimationDemo->Initialize( &player, dynamicsWorld, mComponents );
 		mComponents.push_back( mAnimationDemo );
 
 		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ), player.get<float>( "player.pos.z" ) );
