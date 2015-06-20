@@ -58,6 +58,7 @@ namespace Rendering
 
     private:
 		std::vector<GameComponent*> mComponents;
+		int mLightType = 0;
 
         AnimatedModel();
         AnimatedModel(const AnimatedModel& rhs);
@@ -78,6 +79,7 @@ namespace Rendering
 		XMCOLOR mAmbientColor;
 		//PointLight* mPointLight;
 		XMVECTOR mColorVector;
+		XMVECTOR mLightPositionVector;
 		XMCOLOR mSpecularColor;
 		float mSpecularPower;
         XMFLOAT4X4 mWorldMatrix;

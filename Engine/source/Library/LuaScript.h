@@ -27,6 +27,8 @@ extern "C" {
 
 #include "AnimatedModel.h"
 #include "Keyboard.h"
+#include "Mouse.h"
+
 class LuaScript {
 private:
 	void L_Initialize();
@@ -35,7 +37,7 @@ public:
 	void setLuaVariable( std::string name, int value );
 	void setLuaVariable( std::string name, std::string value );
 	void setLuaVariable( std::string name, float value );
-	void ietsMetKey( Library::Keyboard* board );
+	void InitInput( Library::Keyboard* board, Library::Mouse* mouse );
 	LuaScript( int ok );
 	LuaScript( const std::string& filename, bool stfs = false );
 	~LuaScript();

@@ -27,9 +27,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="content\Scripts\example.scs">
-      <Filter>Scripts</Filter>
-    </None>
     <None Include="content\Scripts\test.lua">
       <Filter>Scripts</Filter>
     </None>

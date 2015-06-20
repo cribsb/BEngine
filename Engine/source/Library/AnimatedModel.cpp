@@ -88,19 +88,29 @@ namespace Rendering
 		SetCurrentDirectory( Utility::ExecutableDirectory().c_str() );
 		mComponents = Components;
 		mAmbientColor = ambientColor;
-		Light* l;
 
 		unsigned int d = mComponents.size();
 
 		for (unsigned int i = 0; i < d; ++i)
 		{
-			//if (mComponents.at(i)->As<Light>())
-			//{
-			//	mColorVector = mComponents.at(i)->As<Light>()->ColorVector();
-			//}
-
-
-
+			if (mComponents.at(i)->As<PointLight>())
+			{
+				mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
+				mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
+				mLightType = PointLightType;
+			}
+			else if (mComponents.at(i)->As<PointLight>())
+			{
+				mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
+				mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
+				mLightType = PointLightType;
+			}
+			else if (mComponents.at(i)->As<PointLight>())
+			{
+				mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
+				mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
+				mLightType = PointLightType;
+			}			
 		}
 
 		// Load the model
@@ -251,10 +261,10 @@ namespace Rendering
 			mMaterial->SpecularPower() << mSpecularPower;
 			mMaterial->AmbientColor() << ambientColor;
 			mMaterial->LightColor() << mColorVector;
-			//mMaterial->LightPosition() << mMat->LightPosition;
-			//mMaterial->LightRadius() << mMat->LightRadius;
-			//mMaterial->ColorTexture() << mMat->ColorTexture;
-			//mMaterial->CameraPosition() << mMat->CameraPosition;
+			mMaterial->LightPosition() << mLightPositionVector;
+			mMaterial->LightRadius() << 500000.0f;
+			mMaterial->ColorTexture() << colorTexture;
+			mMaterial->CameraPosition() << mCamera->PositionVector();
 			mMaterial->BoneTransforms() << mAnimationPlayer->BoneTransforms();
 
 			pass->Apply( 0, direct3DDeviceContext );

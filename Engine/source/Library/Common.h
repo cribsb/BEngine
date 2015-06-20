@@ -34,6 +34,10 @@
 #define DeleteObjects(objects) if((objects) != NULL) { delete[] objects; objects = NULL; }
 #define ReleaseObject(object) if((object) != NULL) { object->Release(); object = NULL; }
 
+#define DirectionalLightType 0;
+#define PointLightType 1;
+#define SpotLightType 2;
+
 namespace Library
 {
     typedef unsigned char byte;

@@ -45,8 +45,7 @@ namespace Rendering
 		mDirectInput( nullptr ), mKeyboard( nullptr ), mMouse( nullptr ), mRenderStateHelper( nullptr ), mSkybox( nullptr ),
 		mAnimationDemo( nullptr ), dynamicsWorld( nullptr )
 	{
-		// All bullet stuff, to be initialised...
-
+		// All bullet stuff
 		// Build the broadphase
 		btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 
@@ -71,7 +70,11 @@ namespace Rendering
 		dynamicsWorld->addRigidBody( groundRigidBody );
 
 		inited = true;
+		// end of bullet stuff
 
+		mMultiSamplingCount = 8;
+		mWindowTitle = L"Menata";
+		
 		mDepthStencilBufferEnabled = true;
 		mMultiSamplingEnabled = true;
 
@@ -94,11 +97,11 @@ namespace Rendering
 		mKeyboard = new Keyboard( *this, mDirectInput );
 		mComponents.push_back( mKeyboard );
 		mServices.AddService( Keyboard::TypeIdClass(), mKeyboard );
-		player.ietsMetKey( mKeyboard );
 
 		mMouse = new Mouse( *this, mDirectInput );
 		mComponents.push_back( mMouse );
 		mServices.AddService( Mouse::TypeIdClass(), mMouse );
+		player.InitInput( mKeyboard, mMouse );
 
 		mCamera = new FirstPersonCamera( *this );
 		mComponents.push_back( mCamera );
@@ -120,8 +123,8 @@ namespace Rendering
 		mRenderStateHelper = new RenderStateHelper( *this );
 
 		mPoint = new PointLight(*this);
-		mPoint->SetRadius( 500.0f );
-		mPoint->SetPosition( 5.0f, 0.0f, 10.0f );
+		mPoint->SetRadius( 500000.0f );
+		mPoint->SetPosition( 0.0f, 0.0f, 10.0f );
 		mPoint->SetColor(1.0f, 2.0f, 0.0f, 1.0f);
 		mComponents.push_back(mPoint);
 

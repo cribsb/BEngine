@@ -14,13 +14,18 @@
 	*/
 #include "LuaScript.h"
 #include "Keyboard.h"
+#include "Mouse.h"
 #include "GameComponent.h"
+#include <string>
+#include <iostream>
 
 Keyboard* mKeyboard;
+Mouse* mMouse;
 
-void LuaScript::ietsMetKey( Keyboard* board )
+void LuaScript::InitInput( Keyboard* board, Mouse* mouse )
 {
 	mKeyboard = board;
+	mMouse = mouse;
 }
 
 void write( const char* msg )
@@ -39,6 +44,111 @@ static int l_write( lua_State* L )
 static int l_checkInput( lua_State* L )
 {
 	std::string key = lua_tostring( L, 1 );
+
+
+	if (key == "LeftMouseButtonDown")
+	{
+		if (mMouse->IsButtonHeldDown(MouseButtons::MouseButtonsLeft))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	if (key == "RightMouseButtonDown")
+	{
+		if (mMouse->IsButtonHeldDown(MouseButtons::MouseButtonsRight))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	if (key == "MiddleMouseButtonDown")
+	{
+		if (mMouse->IsButtonHeldDown(MouseButtons::MouseButtonsMiddle))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+
+	if (key == "LeftMouseButtonClicked")
+	{
+		if (mMouse->WasButtonDown(MouseButtons::MouseButtonsLeft))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	if (key == "RightMouseButtonClicked")
+	{
+		if (mMouse->WasButtonDown(MouseButtons::MouseButtonsRight))
+		{
+			lua_pushnumber(L, 1);
+			printf(key.c_str());
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	if (key == "MiddleMouseButtonClicked")
+	{
+		if (mMouse->WasButtonDown(MouseButtons::MouseButtonsMiddle))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	/*
+	if (key == "LeftMouseButtonDown")
+	{
+		if (mMouse->IsButtonDown(MouseButtons::MouseButtonsLeft))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	if (key == "RightMouseButtonDown")
+	{
+		if (mMouse->IsButtonDown(MouseButtons::MouseButtonsLeft))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	if (key == "MiddleMouseButtonDown")
+	{
+		if (mMouse->IsButtonDown(MouseButtons::MouseButtonsLeft))
+		{
+			lua_pushnumber(L, 1);
+		}
+		else
+		{
+			lua_pushnumber(L, 0);
+		}
+	}
+	*/
 
 	if ( mKeyboard->IsKeyDownC( key ) )
 	{
@@ -62,6 +172,7 @@ void LuaScript::setLuaVariable( std::string name, float value )
 {
 	lua_pushnumber( L, value );
 	lua_setglobal( L, name.c_str() );
+	//lua_call( L, 1, 0 );
 }
 
 void LuaScript::setLuaVariable( std::string name, std::string value )
