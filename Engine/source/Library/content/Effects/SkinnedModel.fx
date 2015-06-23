@@ -1,6 +1,6 @@
 #include "include\\Common.fxh"
 
-#define MaxBones 60
+#define MaxBones 120
 
 /************* Resources *************/
 cbuffer CBufferPerFrame

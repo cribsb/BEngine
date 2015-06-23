@@ -37,6 +37,7 @@
 #include "Shlwapi.h"
 #include <fstream>
 #include "DirectionalLight.h"
+#include "SpotLight.h"
 
 namespace Rendering
 {
@@ -95,21 +96,20 @@ namespace Rendering
 		{
 			if (mComponents.at(i)->As<PointLight>())
 			{
-				mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
-				mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
+				//mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
+				//mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
 				mLightType = PointLightType;
+				mNumPointLights++;
 			}
-			else if (mComponents.at(i)->As<PointLight>())
+			else if (mComponents.at(i)->As<DirectionalLight>())
 			{
-				mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
-				mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
-				mLightType = PointLightType;
+				mLightType = DirectionalLightType;
+				mNumDirLights++;
 			}
-			else if (mComponents.at(i)->As<PointLight>())
+			else if (mComponents.at(i)->As<SpotLight>())
 			{
-				mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
-				mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
-				mLightType = PointLightType;
+				mLightType = SpotLightType;
+				mNumSpotLights++;
 			}			
 		}
 
@@ -125,6 +125,24 @@ namespace Rendering
 		mEffect->LoadCompiledEffect( L"Content\\Effects\\SkinnedModel.cso" );
 		mMaterial = new SkinnedModelMaterial();
 		mMaterial->Initialize( *mEffect );
+		for (int i = 0; i < mNumDirLights; i++)
+		{
+			SkinnedModelMaterial* mat = new SkinnedModelMaterial();
+			mat->Initialize(*mEffect);
+			mDirLightMats[i] = mat;
+		}
+		for (int i = 0; i < mNumPointLights; i++)
+		{
+			SkinnedModelMaterial* mat = new SkinnedModelMaterial();
+			mat->Initialize(*mEffect);
+			mPointLightMats[i] = mat;
+		}
+		for (int i = 0; i < mNumSpotLights; i++)
+		{
+			SkinnedModelMaterial* mat = new SkinnedModelMaterial();
+			mat->Initialize(*mEffect);
+			mSpotLightMats[i] = mat;
+		}
 
 		// Create the vertex and index buffers
 		mVertexBuffers.resize( mSkinnedModel->Meshes().size() );
@@ -255,7 +273,7 @@ namespace Rendering
 			direct3DDeviceContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
 			direct3DDeviceContext->IASetIndexBuffer( indexBuffer, DXGI_FORMAT_R32_UINT, 0 );
 
-			mMaterial->WorldViewProjection() << wvp;
+			/*mMaterial->WorldViewProjection() << wvp;
 			mMaterial->World() << worldMatrix;
 			mMaterial->SpecularColor() << specularColor;
 			mMaterial->SpecularPower() << mSpecularPower;
@@ -266,6 +284,13 @@ namespace Rendering
 			mMaterial->ColorTexture() << colorTexture;
 			mMaterial->CameraPosition() << mCamera->PositionVector();
 			mMaterial->BoneTransforms() << mAnimationPlayer->BoneTransforms();
+			*/
+			
+			for (int j = 0; j < mNumDirLights; j++)
+			{
+				mDirLightMats[i]->WorldViewProjection << wvp;
+				mDirLightMats[i]->World() << worldMatrix;
+			}
 
 			pass->Apply( 0, direct3DDeviceContext );
 

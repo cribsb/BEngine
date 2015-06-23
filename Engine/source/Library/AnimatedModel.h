@@ -59,6 +59,18 @@ namespace Rendering
     private:
 		std::vector<GameComponent*> mComponents;
 		int mLightType = 0;
+		int mNumPointLights = 0;
+		int mNumDirLights = 0;
+		int mNumSpotLights = 0;
+		//std::vector<SkinnedModelMaterial*> mPointLightMats;
+		//std::vector<SkinnedModelMaterial*> mDirLightMats;
+		//std::vector<SkinnedModelMaterial*> mSpotLightMats;
+		SkinnedModelMaterial* mPointLightMats[50];
+		XMCOLOR* mPointLightCVs[50];
+		SkinnedModelMaterial* mDirLightMats[50];
+		XMCOLOR* mDirLightCVs[50];
+		SkinnedModelMaterial* mSpotLightMats[50];
+		XMCOLOR* mSpotLightCVs[50];
 
         AnimatedModel();
         AnimatedModel(const AnimatedModel& rhs);
