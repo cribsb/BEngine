@@ -24,6 +24,8 @@
 #include "PointLight.h"
 #include "Keyboard.h"
 #include "SkinnedModelMaterial.h"
+#include "SpotLightSkinnedModelMaterial.h"
+#include "DirectionalLightSkinnedModelMaterial.h"
 #include "VectorHelper.h"
 #include "ColorHelper.h"
 #include "AnimationPlayer.h"
@@ -43,16 +45,16 @@ namespace Rendering
 {
 	RTTI_DEFINITIONS( AnimatedModel )
 
-	//const float AnimatedModel::LightModulationRate = UCHAR_MAX;
-	//const float AnimatedModel::LightMovementRate = 10.0f;
+		//const float AnimatedModel::LightModulationRate = UCHAR_MAX;
+		//const float AnimatedModel::LightMovementRate = 10.0f;
 
-	AnimatedModel::AnimatedModel( Game& game, Camera& camera )
+		AnimatedModel::AnimatedModel( Game& game, Camera& camera )
 		: DrawableGameComponent( game, camera ),
 		mMaterial( nullptr ), mEffect( nullptr ), mWorldMatrix( MatrixHelper::Identity ),
 		mVertexBuffers(), mIndexBuffers(), mIndexCounts(), mColorTextures(),
-		mKeyboard(nullptr), mAmbientColor(reinterpret_cast<const float*>(&ColorHelper::White)), mSpecularColor(1.0f, 1.0f, 1.0f, 1.0f), mSpecularPower(25.0f), mAnimationPlayer(nullptr), 
+		mKeyboard( nullptr ), mAmbientColor( reinterpret_cast<const float*>(&ColorHelper::White) ), mSpecularColor( 1.0f, 1.0f, 1.0f, 1.0f ), mSpecularPower( 25.0f ), mAnimationPlayer( nullptr ),
 		/*mPointLight( nullptr ), mProxyModel( nullptr ), mSpriteBatch( nullptr ), mSpriteFont( nullptr ), mTextPosition( 0.0f, 40.0f ), */
-		mRenderStateHelper(game), mManualAdvanceMode(false), mSkinnedModel(nullptr)
+		mRenderStateHelper( game ), mManualAdvanceMode( false ), mSkinnedModel( nullptr )
 	{ }
 
 	AnimatedModel::~AnimatedModel()
@@ -84,33 +86,46 @@ namespace Rendering
 
 	LuaScript* ps;
 
-	void AnimatedModel::Initialize(LuaScript* s, btDiscreteDynamicsWorld* world, std::vector<GameComponent*> Components, XMCOLOR ambientColor)
+	void AnimatedModel::Initialize( LuaScript* s, btDiscreteDynamicsWorld* world, std::vector<GameComponent*> Components, XMCOLOR ambientColor )
 	{
 		SetCurrentDirectory( Utility::ExecutableDirectory().c_str() );
+		mComponents.reserve( Components.size() );
 		mComponents = Components;
 		mAmbientColor = ambientColor;
 
 		unsigned int d = mComponents.size();
 
-		for (unsigned int i = 0; i < d; ++i)
+		for ( unsigned int i = 0; i < d; ++i )
 		{
-			if (mComponents.at(i)->As<PointLight>())
+			if ( mComponents.at( i )->As<PointLight>() )
 			{
 				//mColorVector = mComponents.at(i)->As<PointLight>()->ColorVector();
 				//mLightPositionVector = mComponents.at(i)->As<PointLight>()->PositionVector();
-				mLightType = PointLightType;
+				mPLColorVectors[mNumPointLights] = mComponents.at( i )->As<PointLight>()->ColorVector();
+				mPLPosVectors[mNumPointLights] = mComponents.at( i )->As<PointLight>()->PositionVector();
+				mPointLightCVs[mNumPointLights] = mComponents.at( i )->As<PointLight>()->Color();
+				//mLightType = PointLightType;
 				mNumPointLights++;
 			}
-			else if (mComponents.at(i)->As<DirectionalLight>())
+			if ( mComponents.at( i )->As<DirectionalLight>() )
 			{
-				mLightType = DirectionalLightType;
+				mDLColorVectors[mNumDirLights] = mComponents.at( i )->As<DirectionalLight>()->ColorVector();
+				mDirLightCVs[mNumDirLights] = mComponents.at( i )->As<DirectionalLight>()->Color();
+				mDirLightDirs[mNumDirLights] = mComponents.at( i )->As<DirectionalLight>()->Direction();
+				//mLightType = DirectionalLightType;
 				mNumDirLights++;
 			}
-			else if (mComponents.at(i)->As<SpotLight>())
+			if ( mComponents.at( i )->As<SpotLight>() )
 			{
-				mLightType = SpotLightType;
+				mSLColorVectors[mNumSpotLights] = mComponents.at( i )->As<SpotLight>()->ColorVector();
+				mSpotLightCVs[mNumSpotLights] = mComponents.at( i )->As<SpotLight>()->Color();
+				mSLInnerRadia[mNumSpotLights] = mComponents.at( i )->As<SpotLight>()->InnerAngle();
+				mSLOuterRadia[mNumSpotLights] = mComponents.at( i )->As<SpotLight>()->OuterAngle();
+				mSLRads[mNumSpotLights] = mComponents.at( i )->As<SpotLight>()->Radius();
+				mSLDirs[mNumSpotLights] = mComponents.at( i )->As<SpotLight>()->Direction();
+				//mLightType = SpotLightType;
 				mNumSpotLights++;
-			}			
+			}
 		}
 
 		// Load the model
@@ -125,22 +140,22 @@ namespace Rendering
 		mEffect->LoadCompiledEffect( L"Content\\Effects\\SkinnedModel.cso" );
 		mMaterial = new SkinnedModelMaterial();
 		mMaterial->Initialize( *mEffect );
-		for (int i = 0; i < mNumDirLights; i++)
+		for ( int i = 0; i < mNumDirLights; i++ )
 		{
-			SkinnedModelMaterial* mat = new SkinnedModelMaterial();
-			mat->Initialize(*mEffect);
+			DirectionalLightSkinnedModelMaterial* mat = new DirectionalLightSkinnedModelMaterial();
+			mat->Initialize( *mEffect );
 			mDirLightMats[i] = mat;
 		}
-		for (int i = 0; i < mNumPointLights; i++)
+		for ( int i = 0; i < mNumPointLights; i++ )
 		{
 			SkinnedModelMaterial* mat = new SkinnedModelMaterial();
-			mat->Initialize(*mEffect);
+			mat->Initialize( *mEffect );
 			mPointLightMats[i] = mat;
 		}
-		for (int i = 0; i < mNumSpotLights; i++)
+		for ( int i = 0; i < mNumSpotLights; i++ )
 		{
-			SkinnedModelMaterial* mat = new SkinnedModelMaterial();
-			mat->Initialize(*mEffect);
+			SpotLightSkinnedModelMaterial* mat = new SpotLightSkinnedModelMaterial();
+			mat->Initialize( *mEffect );
 			mSpotLightMats[i] = mat;
 		}
 
@@ -190,7 +205,7 @@ namespace Rendering
 		colShape->calculateLocalInertia( 1, fallInertia );
 		motionState = new btDefaultMotionState( btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, 10, 0 ) ) );
 		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
-			1,					// mass
+			1,						// mass
 			motionState,			// initial position
 			colShape,				// collision shape of body
 			fallInertia				// local inertia
@@ -285,11 +300,43 @@ namespace Rendering
 			mMaterial->CameraPosition() << mCamera->PositionVector();
 			mMaterial->BoneTransforms() << mAnimationPlayer->BoneTransforms();
 			*/
-			
-			for (int j = 0; j < mNumDirLights; j++)
+
+			for ( int j = 0; j < mNumDirLights; j++ )
 			{
-				mDirLightMats[i]->WorldViewProjection << wvp;
+				mDirLightMats[i]->WorldViewProjection() << wvp;
 				mDirLightMats[i]->World() << worldMatrix;
+				mDirLightMats[i]->AmbientColor() << ambientColor;
+				mDirLightMats[i]->LightDirection() << XMLoadFloat3(&mDirLightDirs[i]);
+				mDirLightMats[i]->ColorTexture() << colorTexture;
+				mDirLightMats[i]->BoneTransforms() << mAnimationPlayer->BoneTransforms();
+			}
+			for ( int k = 0; k < mNumPointLights; k++ )
+			{
+				mPointLightMats[i]->WorldViewProjection() << wvp;
+				mPointLightMats[i]->World() << worldMatrix;
+				mPointLightMats[i]->SpecularColor() << specularColor;
+				mPointLightMats[i]->SpecularPower() << mSpecularPower;
+				mPointLightMats[i]->AmbientColor() << ambientColor;
+				mPointLightMats[i]->LightColor() << mPLColorVectors[i];
+				mPointLightMats[i]->LightPosition() << mPLPosVectors[i];
+				mPointLightMats[i]->LightRadius() << 500000.0f;
+				mPointLightMats[i]->ColorTexture() << colorTexture;
+				mPointLightMats[i]->CameraPosition() << mCamera->PositionVector();
+				mPointLightMats[i]->BoneTransforms() << mAnimationPlayer->BoneTransforms();
+			}
+			for ( int l = 0; l < mNumSpotLights; l++ )
+			{
+				mSpotLightMats[i]->WorldViewProjection() << wvp;
+				mSpotLightMats[i]->World() << worldMatrix;
+				mSpotLightMats[i]->SpecularColor() << specularColor;
+				//mSpotLightMats[i]->SpecularPower() << specularColor;
+				mSpotLightMats[i]->AmbientColor() << ambientColor;
+				mSpotLightMats[i]->SpotLightInnerAngle() << mSLInnerRadia[i];
+				mSpotLightMats[i]->SpotLightOuterAngle() << mSLOuterRadia[i];
+				mSpotLightMats[i]->LightLookAt() << XMLoadFloat3(&mSLDirs[i]);
+				mSpotLightMats[i]->ColorTexture() << colorTexture;
+				mSpotLightMats[i]->CameraPosition() << mCamera->PositionVector();
+				mSpotLightMats[i]->BoneTransforms() << mAnimationPlayer->BoneTransforms();
 			}
 
 			pass->Apply( 0, direct3DDeviceContext );
@@ -308,15 +355,15 @@ namespace Rendering
 		//helpLabel << L"Specular Power (+Insert/-Delete): " << mSpecularPower << "\n";
 		//helpLabel << L"Move Point Light (8/2, 4/6, 3/9)\n";
 		//helpLabel << "Frame Advance Mode (Enter): " << (mManualAdvanceMode ? "Manual" : "Auto") << "\nAnimation Time: " << mAnimationPlayer->CurrentTime()
-			//<< "\nFrame Interpolation (I): " << (mAnimationPlayer->InterpolationEnabled() ? "On" : "Off") << "\nGo to Bind Pose (B)";
+		//<< "\nFrame Interpolation (I): " << (mAnimationPlayer->InterpolationEnabled() ? "On" : "Off") << "\nGo to Bind Pose (B)";
 
 		//if ( mManualAdvanceMode )
 		//{
-			//helpLabel << "\nCurrent Keyframe (Space): " << mAnimationPlayer->CurrentKeyframe();
+		//helpLabel << "\nCurrent Keyframe (Space): " << mAnimationPlayer->CurrentKeyframe();
 		//}
 		//else
 		//{
-			//helpLabel << "\nPause / Resume(P)";
+		//helpLabel << "\nPause / Resume(P)";
 		//}
 
 		//mSpriteFont->DrawString( mSpriteBatch, helpLabel.str().c_str(), mTextPosition );
@@ -327,159 +374,159 @@ namespace Rendering
 
 	/*void AnimatedModel::UpdateOptions()
 	{
-		if ( mKeyboard != nullptr )
-		{
-			if ( mKeyboard->WasKeyPressedThisFrame( DIK_P ) )
-			{
-				if ( mAnimationPlayer->IsPlayingClip() )
-				{
-					mAnimationPlayer->PauseClip();
-				}
-				else
-				{
-					mAnimationPlayer->ResumeClip();
-				}
-			}
+	if ( mKeyboard != nullptr )
+	{
+	if ( mKeyboard->WasKeyPressedThisFrame( DIK_P ) )
+	{
+	if ( mAnimationPlayer->IsPlayingClip() )
+	{
+	mAnimationPlayer->PauseClip();
+	}
+	else
+	{
+	mAnimationPlayer->ResumeClip();
+	}
+	}
 
-			if ( mKeyboard->WasKeyPressedThisFrame( DIK_B ) )
-			{
-				// Reset the animation clip to the bind pose
-				mAnimationPlayer->StartClip( *(mSkinnedModel->Animations().at( 0 )) );
-			}
+	if ( mKeyboard->WasKeyPressedThisFrame( DIK_B ) )
+	{
+	// Reset the animation clip to the bind pose
+	mAnimationPlayer->StartClip( *(mSkinnedModel->Animations().at( 0 )) );
+	}
 
-			if ( mKeyboard->WasKeyPressedThisFrame( DIK_I ) )
-			{
-				// Enable/disabled interpolation
-				mAnimationPlayer->SetInterpolationEnabled( !mAnimationPlayer->InterpolationEnabled() );
-			}
+	if ( mKeyboard->WasKeyPressedThisFrame( DIK_I ) )
+	{
+	// Enable/disabled interpolation
+	mAnimationPlayer->SetInterpolationEnabled( !mAnimationPlayer->InterpolationEnabled() );
+	}
 
-			if ( mKeyboard->WasKeyPressedThisFrame( DIK_RETURN ) )
-			{
-				// Enable/disable manual advance mode
-				mManualAdvanceMode = !mManualAdvanceMode;
-				mAnimationPlayer->SetCurrentKeyFrame( 0 );
-			}
+	if ( mKeyboard->WasKeyPressedThisFrame( DIK_RETURN ) )
+	{
+	// Enable/disable manual advance mode
+	mManualAdvanceMode = !mManualAdvanceMode;
+	mAnimationPlayer->SetCurrentKeyFrame( 0 );
+	}
 
-			if ( mManualAdvanceMode && mKeyboard->WasKeyPressedThisFrame( DIK_SPACE ) )
-			{
-				// Advance the current keyframe
-				UINT currentKeyFrame = mAnimationPlayer->CurrentKeyframe();
-				currentKeyFrame++;
-				if ( currentKeyFrame >= mAnimationPlayer->CurrentClip()->KeyframeCount() )
-				{
-					currentKeyFrame = 0;
-				}
+	if ( mManualAdvanceMode && mKeyboard->WasKeyPressedThisFrame( DIK_SPACE ) )
+	{
+	// Advance the current keyframe
+	UINT currentKeyFrame = mAnimationPlayer->CurrentKeyframe();
+	currentKeyFrame++;
+	if ( currentKeyFrame >= mAnimationPlayer->CurrentClip()->KeyframeCount() )
+	{
+	currentKeyFrame = 0;
+	}
 
-				mAnimationPlayer->SetCurrentKeyFrame( currentKeyFrame );
-			}
-		}
+	mAnimationPlayer->SetCurrentKeyFrame( currentKeyFrame );
+	}
+	}
 	}
 
 	void AnimatedModel::UpdateAmbientLight( const GameTime& gameTime )
 	{
-		static float ambientIntensity = mAmbientColor.a;
+	static float ambientIntensity = mAmbientColor.a;
 
-		if ( mKeyboard != nullptr )
-		{
-			if ( mKeyboard->IsKeyDown( DIK_PGUP ) && ambientIntensity < UCHAR_MAX )
-			{
-				ambientIntensity += LightModulationRate * (float)gameTime.ElapsedGameTime();
-				mAmbientColor.a = (UCHAR)XMMin<float>( ambientIntensity, UCHAR_MAX );
-			}
+	if ( mKeyboard != nullptr )
+	{
+	if ( mKeyboard->IsKeyDown( DIK_PGUP ) && ambientIntensity < UCHAR_MAX )
+	{
+	ambientIntensity += LightModulationRate * (float)gameTime.ElapsedGameTime();
+	mAmbientColor.a = (UCHAR)XMMin<float>( ambientIntensity, UCHAR_MAX );
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_PGDN ) && ambientIntensity > 0 )
-			{
-				ambientIntensity -= LightModulationRate * (float)gameTime.ElapsedGameTime();
-				mAmbientColor.a = (UCHAR)XMMax<float>( ambientIntensity, 0 );
-			}
-		}
+	if ( mKeyboard->IsKeyDown( DIK_PGDN ) && ambientIntensity > 0 )
+	{
+	ambientIntensity -= LightModulationRate * (float)gameTime.ElapsedGameTime();
+	mAmbientColor.a = (UCHAR)XMMax<float>( ambientIntensity, 0 );
+	}
+	}
 	}
 
 	void AnimatedModel::UpdateSpecularLight( const GameTime& gameTime )
 	{
-		static float specularIntensity = mSpecularPower;
+	static float specularIntensity = mSpecularPower;
 
-		if ( mKeyboard != nullptr )
-		{
-			if ( mKeyboard->IsKeyDown( DIK_INSERT ) && specularIntensity < UCHAR_MAX )
-			{
-				specularIntensity += LightModulationRate * (float)gameTime.ElapsedGameTime();
-				specularIntensity = XMMin<float>( specularIntensity, UCHAR_MAX );
+	if ( mKeyboard != nullptr )
+	{
+	if ( mKeyboard->IsKeyDown( DIK_INSERT ) && specularIntensity < UCHAR_MAX )
+	{
+	specularIntensity += LightModulationRate * (float)gameTime.ElapsedGameTime();
+	specularIntensity = XMMin<float>( specularIntensity, UCHAR_MAX );
 
-				mSpecularPower = specularIntensity;;
-			}
+	mSpecularPower = specularIntensity;;
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_DELETE ) && specularIntensity > 0 )
-			{
-				specularIntensity -= LightModulationRate * (float)gameTime.ElapsedGameTime();
-				specularIntensity = XMMax<float>( specularIntensity, 0 );
+	if ( mKeyboard->IsKeyDown( DIK_DELETE ) && specularIntensity > 0 )
+	{
+	specularIntensity -= LightModulationRate * (float)gameTime.ElapsedGameTime();
+	specularIntensity = XMMax<float>( specularIntensity, 0 );
 
-				mSpecularPower = specularIntensity;
-			}
-		}
+	mSpecularPower = specularIntensity;
+	}
+	}
 	}
 
 	void AnimatedModel::UpdatePointLight( const GameTime& gameTime )
 	{
-		static float pointLightIntensity = mPointLight->Color().a;
-		float elapsedTime = (float)gameTime.ElapsedGameTime();
+	static float pointLightIntensity = mPointLight->Color().a;
+	float elapsedTime = (float)gameTime.ElapsedGameTime();
 
-		// Update point light intensity		
-		if ( mKeyboard->IsKeyDown( DIK_HOME ) && pointLightIntensity < UCHAR_MAX )
-		{
-			pointLightIntensity += LightModulationRate * elapsedTime;
+	// Update point light intensity
+	if ( mKeyboard->IsKeyDown( DIK_HOME ) && pointLightIntensity < UCHAR_MAX )
+	{
+	pointLightIntensity += LightModulationRate * elapsedTime;
 
-			XMCOLOR pointLightLightColor = mPointLight->Color();
-			pointLightLightColor.a = (UCHAR)XMMin<float>( pointLightIntensity, UCHAR_MAX );
-			mPointLight->SetColor( pointLightLightColor );
-		}
-		if ( mKeyboard->IsKeyDown( DIK_END ) && pointLightIntensity > 0 )
-		{
-			pointLightIntensity -= LightModulationRate * elapsedTime;
+	XMCOLOR pointLightLightColor = mPointLight->Color();
+	pointLightLightColor.a = (UCHAR)XMMin<float>( pointLightIntensity, UCHAR_MAX );
+	mPointLight->SetColor( pointLightLightColor );
+	}
+	if ( mKeyboard->IsKeyDown( DIK_END ) && pointLightIntensity > 0 )
+	{
+	pointLightIntensity -= LightModulationRate * elapsedTime;
 
-			XMCOLOR pointLightLightColor = mPointLight->Color();
-			pointLightLightColor.a = (UCHAR)XMMax<float>( pointLightIntensity, 0.0f );
-			mPointLight->SetColor( pointLightLightColor );
-		}
+	XMCOLOR pointLightLightColor = mPointLight->Color();
+	pointLightLightColor.a = (UCHAR)XMMax<float>( pointLightIntensity, 0.0f );
+	mPointLight->SetColor( pointLightLightColor );
+	}
 
-		// Move point light
-		XMFLOAT3 movementAmount = Vector3Helper::Zero;
-		if ( mKeyboard != nullptr )
-		{
-			if ( mKeyboard->IsKeyDown( DIK_NUMPAD4 ) )
-			{
-				movementAmount.x = -1.0f;
-			}
+	// Move point light
+	XMFLOAT3 movementAmount = Vector3Helper::Zero;
+	if ( mKeyboard != nullptr )
+	{
+	if ( mKeyboard->IsKeyDown( DIK_NUMPAD4 ) )
+	{
+	movementAmount.x = -1.0f;
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_NUMPAD6 ) )
-			{
-				movementAmount.x = 1.0f;
-			}
+	if ( mKeyboard->IsKeyDown( DIK_NUMPAD6 ) )
+	{
+	movementAmount.x = 1.0f;
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_NUMPAD9 ) )
-			{
-				movementAmount.y = 1.0f;
-			}
+	if ( mKeyboard->IsKeyDown( DIK_NUMPAD9 ) )
+	{
+	movementAmount.y = 1.0f;
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_NUMPAD3 ) )
-			{
-				movementAmount.y = -1.0f;
-			}
+	if ( mKeyboard->IsKeyDown( DIK_NUMPAD3 ) )
+	{
+	movementAmount.y = -1.0f;
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_NUMPAD8 ) )
-			{
-				movementAmount.z = -1.0f;
-			}
+	if ( mKeyboard->IsKeyDown( DIK_NUMPAD8 ) )
+	{
+	movementAmount.z = -1.0f;
+	}
 
-			if ( mKeyboard->IsKeyDown( DIK_NUMPAD2 ) )
-			{
-				movementAmount.z = 1.0f;
-			}
-		}
+	if ( mKeyboard->IsKeyDown( DIK_NUMPAD2 ) )
+	{
+	movementAmount.z = 1.0f;
+	}
+	}
 
-		XMVECTOR movement = XMLoadFloat3( &movementAmount ) * LightMovementRate * elapsedTime;
-		//mPointLight->SetPosition(mPointLight->PositionVector() + movement);
-		mPointLight->SetPosition( XMVectorAdd( mPointLight->PositionVector(), movement ) );
-		mProxyModel->SetPosition( mPointLight->Position() );
+	XMVECTOR movement = XMLoadFloat3( &movementAmount ) * LightMovementRate * elapsedTime;
+	//mPointLight->SetPosition(mPointLight->PositionVector() + movement);
+	mPointLight->SetPosition( XMVectorAdd( mPointLight->PositionVector(), movement ) );
+	mProxyModel->SetPosition( mPointLight->Position() );
 	}*/
 }

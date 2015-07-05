@@ -74,7 +74,7 @@ namespace Rendering
 
 		mMultiSamplingCount = 8;
 		mWindowTitle = L"Menata";
-		
+
 		mDepthStencilBufferEnabled = true;
 		mMultiSamplingEnabled = true;
 
@@ -122,12 +122,26 @@ namespace Rendering
 
 		mRenderStateHelper = new RenderStateHelper( *this );
 
-		mPoint = new PointLight(*this);
-		mPoint->SetRadius( 500000.0f );
+		mPoint = new PointLight( *this );
+		mPoint->SetRadius( 5000.0f );
 		mPoint->SetPosition( 0.0f, 0.0f, 10.0f );
-		mPoint->SetColor(1.0f, 2.0f, 0.0f, 1.0f);
-		mComponents.push_back(mPoint);
+		mPoint->SetColor( 1.0f, 10.0f, 0.0f, 1.0f );
+		mComponents.push_back( mPoint );
+		mPoint->SetPosition( 0.0f, 0.0f, -10.0f );
+		mComponents.push_back( mPoint );
 
+		SpotLight* sl = new SpotLight( *this );
+		sl->SetColor( 1.0f, 0.0f, 0.0f, 1.0f );
+		sl->SetRadius( 500.0f );
+		sl->SetInnerAngle( 10.0f );
+		sl->SetOuterAngle( 25.0f );
+		sl->SetPosition( 0.0f, 5.0f, 5.0f );
+		//mComponents.push_back( sl );
+
+		DirectionalLight* dl = new DirectionalLight( *this );
+		dl->SetColor( 0.0f, 0.0f, 1.0f, 1.0f );
+		//dl->Direction = XMFLOAT3( 0.0f, 0.0f, 0.0f );
+		mComponents.push_back( dl );
 
 		Game::Initialize();
 
@@ -145,7 +159,7 @@ namespace Rendering
 		DeleteObject( mKeyboard );
 		DeleteObject( mMouse );
 		DeleteObject( mSkybox )
-		DeleteObject( mGrid );
+			DeleteObject( mGrid );
 		DeleteObject( mFpsComponent );
 		DeleteObject( mCamera );
 
@@ -164,11 +178,15 @@ namespace Rendering
 		{
 			Exit();
 		}
+		if ( mKeyboard->WasKeyPressedThisFrame( DIK_C ) )
+		{
+			mPoint->SetPosition( mPoint->Position().x, mPoint->Position().y, mPoint->Position().z + 1 );
+		}
 		Game::Update( gameTime );
-		player.L_Update(gameTime.ElapsedGameTime());
+		player.L_Update( gameTime.ElapsedGameTime() );
 		mCamera->SetPosition( player.get<float>( "player.pos.x" ), player.get<float>( "player.pos.y" ) + 8, player.get<float>( "player.pos.z" ) + 10 );
-		mCamera->ApplyRotation(mAnimationDemo->getWorldMatrix());
-		dynamicsWorld->stepSimulation( 1/60.0f );
+		mCamera->ApplyRotation( mAnimationDemo->getWorldMatrix() );
+		dynamicsWorld->stepSimulation( 1 / 60.0f );
 	}
 
 	void RenderingGame::Draw( const GameTime &gameTime )

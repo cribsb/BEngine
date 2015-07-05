@@ -19,6 +19,8 @@
 #include "LuaScript.h"
 #include <stdio.h>
 #include "PointLight.h"
+#include "SpotLight.h"
+#include "DirectionalLight.h"
 
 using namespace Library;
 

@@ -30,6 +30,8 @@ namespace Library
 	class ProxyModel;
     class Effect;
 	class SkinnedModelMaterial;
+	class SpotLightSkinnedModelMaterial;
+	class DirectionalLightSkinnedModelMaterial;
 	class Model;
 	class AnimationPlayer;
 	class ColorHelper;
@@ -65,12 +67,24 @@ namespace Rendering
 		//std::vector<SkinnedModelMaterial*> mPointLightMats;
 		//std::vector<SkinnedModelMaterial*> mDirLightMats;
 		//std::vector<SkinnedModelMaterial*> mSpotLightMats;
-		SkinnedModelMaterial* mPointLightMats[50];
-		XMCOLOR* mPointLightCVs[50];
-		SkinnedModelMaterial* mDirLightMats[50];
-		XMCOLOR* mDirLightCVs[50];
-		SkinnedModelMaterial* mSpotLightMats[50];
-		XMCOLOR* mSpotLightCVs[50];
+		SkinnedModelMaterial* mPointLightMats[150];
+		XMCOLOR mPointLightCVs[150];
+		XMVECTOR mPLColorVectors[150];
+		XMVECTOR mPLPosVectors[150];
+		float mPLRads[150];
+
+		DirectionalLightSkinnedModelMaterial* mDirLightMats[150];
+		XMVECTOR mDLColorVectors[150];
+		XMCOLOR mDirLightCVs[150];
+		XMFLOAT3 mDirLightDirs[150];
+
+		SpotLightSkinnedModelMaterial* mSpotLightMats[150];
+		XMVECTOR mSLColorVectors[150];
+		XMCOLOR mSpotLightCVs[150];
+		XMFLOAT3 mSLDirs[150];
+		float mSLInnerRadia[150];
+		float mSLOuterRadia[150];
+		float mSLRads[150];
 
         AnimatedModel();
         AnimatedModel(const AnimatedModel& rhs);

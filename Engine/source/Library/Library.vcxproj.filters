@@ -275,6 +275,12 @@
     <ClInclude Include="AnimatedModel.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="SpotLightSkinnedModelMaterial.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLightSkinnedModelMaterial.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mouse.cpp">
@@ -475,6 +481,12 @@
     <ClCompile Include="AnimatedModel.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="SpotLightSkinnedModelMaterial.cpp">
+      <Filter>Source Files\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLightSkinnedModelMaterial.cpp">
+      <Filter>Source Files\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="content\Effects\BasicEffect.fx">
@@ -502,6 +514,12 @@
       <Filter>Content\Effects</Filter>
     </FxCompile>
     <FxCompile Include="content\Effects\SkinnedModel.fx">
+      <Filter>Content\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="content\Effects\SLSkinnedModel.fx">
+      <Filter>Content\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="content\Effects\DLSkinnedModel.fx">
       <Filter>Content\Effects</Filter>
     </FxCompile>
   </ItemGroup>

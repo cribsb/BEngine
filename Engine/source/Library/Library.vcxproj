@@ -28,6 +28,7 @@
     <ClInclude Include="DepthMap.h" />
     <ClInclude Include="DepthMapMaterial.h" />
     <ClInclude Include="DirectionalLight.h" />
+    <ClInclude Include="DirectionalLightSkinnedModelMaterial.h" />
     <ClInclude Include="DistortionMapping.h" />
     <ClInclude Include="DistortionMappingMaterial.h" />
     <ClInclude Include="DrawableGameComponent.h" />
@@ -56,6 +57,7 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="SpotLightSkinnedModelMaterial.h" />
     <ClInclude Include="PostProcessingMaterial.h" />
     <ClInclude Include="FullScreenRenderTarget.h" />
     <ClInclude Include="ProjectiveTextureMappingMaterial.h" />
@@ -99,6 +101,7 @@
     <ClCompile Include="DepthMap.cpp" />
     <ClCompile Include="DepthMapMaterial.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
+    <ClCompile Include="DirectionalLightSkinnedModelMaterial.cpp" />
     <ClCompile Include="DistortionMapping.cpp" />
     <ClCompile Include="DistortionMappingMaterial.cpp" />
     <ClCompile Include="DrawableGameComponent.cpp" />
@@ -126,6 +129,7 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="SpotLightSkinnedModelMaterial.cpp" />
     <ClCompile Include="PostProcessingMaterial.cpp" />
     <ClCompile Include="FullScreenRenderTarget.cpp" />
     <ClCompile Include="ProjectiveTextureMappingMaterial.cpp" />
@@ -160,11 +164,13 @@
     <FxCompile Include="content\Effects\Bloom.fx" />
     <FxCompile Include="content\Effects\DepthMap.fx" />
     <FxCompile Include="content\Effects\Distortion.fx" />
+    <FxCompile Include="content\Effects\DLSkinnedModel.fx" />
     <FxCompile Include="content\Effects\GaussianBlur.fx" />
     <FxCompile Include="content\Effects\ProjectiveTextureMapping.fx" />
     <FxCompile Include="content\Effects\ShadowMapping.fx" />
     <FxCompile Include="content\Effects\SkinnedModel.fx" />
     <FxCompile Include="content\Effects\Skybox.fx" />
+    <FxCompile Include="content\Effects\SLSkinnedModel.fx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Library.licenseheader" />

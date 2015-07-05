@@ -24,7 +24,7 @@ function Update(d)
         player.pos.x = player.pos.x - 10*d
     end
 	if keyPressed("RightMouseButtonClicked") == 1 then
-		 write("oek")
+		 --write("oek")
 	end
     --write(player.pos.y)
 end

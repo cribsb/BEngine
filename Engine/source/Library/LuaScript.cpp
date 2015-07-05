@@ -96,7 +96,7 @@ static int l_checkInput( lua_State* L )
 		if (mMouse->WasButtonDown(MouseButtons::MouseButtonsRight))
 		{
 			lua_pushnumber(L, 1);
-			printf(key.c_str());
+			//printf(key.c_str());
 		}
 		else
 		{
