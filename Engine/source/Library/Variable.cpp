@@ -56,6 +56,17 @@ namespace Library
 		return mName;
 	}
 
+	Variable Variable::operator[]( UINT index )
+	{
+		ID3DX11EffectVariable* variable = mVariable->GetElement( index );
+		if ( variable == nullptr )
+		{
+			throw GameException( "ID3DX11EffectVariable::GetElement() failed to return a valid element." );
+		}
+
+		return Variable( mEffect, variable );
+	}
+
 	Variable& Variable::operator<<(CXMMATRIX value)
 	{
 		ID3DX11EffectMatrixVariable* variable = mVariable->AsMatrix();

@@ -125,23 +125,27 @@ namespace Rendering
 		mPoint = new PointLight( *this );
 		mPoint->SetRadius( 5000.0f );
 		mPoint->SetPosition( 0.0f, 0.0f, 10.0f );
-		mPoint->SetColor( 1.0f, 10.0f, 0.0f, 1.0f );
+		mPoint->SetColor( 0.0f, 10.0f, 0.0f, 1.0f );
 		mComponents.push_back( mPoint );
-		mPoint->SetPosition( 0.0f, 0.0f, -10.0f );
-		mComponents.push_back( mPoint );
+
+		PointLight* point = new PointLight( *this );
+		point->SetRadius( 5000.0f );
+		point->SetPosition( 0.0f, 0.0f, -10.0f );
+		point->SetColor( 10.0f, 0.0f, 0.0f, 1.0f );
+		mComponents.push_back( point );
 
 		SpotLight* sl = new SpotLight( *this );
 		sl->SetColor( 1.0f, 0.0f, 0.0f, 1.0f );
 		sl->SetRadius( 500.0f );
 		sl->SetInnerAngle( 10.0f );
 		sl->SetOuterAngle( 25.0f );
-		sl->SetPosition( 0.0f, 5.0f, 5.0f );
+		sl->SetPosition( 0.0f, 5.0f, -5.0f );
 		//mComponents.push_back( sl );
 
 		DirectionalLight* dl = new DirectionalLight( *this );
-		dl->SetColor( 0.0f, 0.0f, 1.0f, 1.0f );
+		dl->SetColor( 0.0f, 0.0f, 10.0f, 1.0f );
 		//dl->Direction = XMFLOAT3( 0.0f, 0.0f, 0.0f );
-		mComponents.push_back( dl );
+		//mComponents.push_back( dl );
 
 		Game::Initialize();
 

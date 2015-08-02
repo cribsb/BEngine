@@ -49,6 +49,9 @@ struct VS_INPUT
 	float4 BoneWeights : WEIGHTS;
 };
 
+extern int numLights : register(c0);
+POINT_LIGHT PointLights[2];
+
 struct VS_OUTPUT
 {
 	float4 Position : SV_Position;
@@ -62,7 +65,7 @@ struct VS_OUTPUT
 /*************** Point Light ***************/
 /************* Vertex Shader *************/
 
-VS_OUTPUT vertex_shader( VS_INPUT IN )
+VS_OUTPUT vertex_shaderPL( VS_INPUT IN )
 {
 	VS_OUTPUT OUT = (VS_OUTPUT)0;
 
@@ -89,7 +92,7 @@ VS_OUTPUT vertex_shader( VS_INPUT IN )
 
 /************* Pixel Shaders *************/
 
-float4 pixel_shader( VS_OUTPUT IN ) : SV_Target
+float4 pixel_shaderPL( VS_OUTPUT IN ) : SV_Target
 {
 	float4 OUT = (float4)0;
 
@@ -110,7 +113,67 @@ float4 pixel_shader( VS_OUTPUT IN ) : SV_Target
 		float3 diffuse = get_vector_color_contribution( LightColor, lightCoefficients.y * color.rgb ) * IN.Attenuation;
 		float3 specular = get_scalar_color_contribution( SpecularColor, min( lightCoefficients.z, color.w ) ) * IN.Attenuation;
 
-		OUT.rgb = ambient + diffuse + specular;
+		LIGHT_CONTRIBUTION_DATA lightContributionData;
+	lightContributionData.Color = color;
+	lightContributionData.Normal = normal;
+	lightContributionData.ViewDirection = viewDirection;
+	lightContributionData.SpecularColor = SpecularColor;
+	lightContributionData.SpecularPower = SpecularPower;
+
+	float3 totalLightContribution = (float3)0;
+
+		for ( int i = 0; i < 1; i++ )
+		{
+			lightContributionData.LightDirection = get_light_data( PointLights[i].Position, IN.WorldPosition, PointLights[i].LightRadius );
+			lightContributionData.LightColor = PointLights[i].Color;
+			totalLightContribution += get_light_contribution( lightContributionData );
+		}
+
+
+	OUT.rgb = ambient + diffuse + specular + totalLightContribution;
+	OUT.a = 1.0f;
+
+	return OUT;
+}
+float4 pixel_shaderPLW( VS_OUTPUT IN ) : SV_Target
+{
+	float4 OUT = (float4)0;
+
+	float3 lightDirection = LightPosition - IN.WorldPosition;
+	lightDirection = normalize( lightDirection );
+
+	float3 viewDirection = normalize( CameraPosition - IN.WorldPosition );
+
+		float3 normal = normalize( IN.Normal );
+		float n_dot_l = dot( normal, lightDirection );
+	float3 halfVector = normalize( lightDirection + viewDirection );
+		float n_dot_h = dot( normal, halfVector );
+
+	float4 color = ColorTexture.Sample( ColorSampler, IN.TextureCoordinate );
+		float4 lightCoefficients = lit( n_dot_l, n_dot_h, SpecularPower );
+
+		float3 ambient = get_vector_color_contribution( AmbientColor, color.rgb );
+		float3 diffuse = get_vector_color_contribution( LightColor, lightCoefficients.y * color.rgb ) * IN.Attenuation;
+		float3 specular = get_scalar_color_contribution( SpecularColor, min( lightCoefficients.z, color.w ) ) * IN.Attenuation;
+
+		LIGHT_CONTRIBUTION_DATA lightContributionData;
+	lightContributionData.Color = color;
+	lightContributionData.Normal = normal;
+	lightContributionData.ViewDirection = viewDirection;
+	lightContributionData.SpecularColor = SpecularColor;
+	lightContributionData.SpecularPower = SpecularPower;
+
+	float3 totalLightContribution = (float3)0;
+
+		for ( int i = 0; i < 2; i++ )
+		{
+			lightContributionData.LightDirection = get_light_data( PointLights[i].Position, IN.WorldPosition, PointLights[i].LightRadius );
+			lightContributionData.LightColor = PointLights[i].Color;
+			totalLightContribution += get_light_contribution( lightContributionData );
+		}
+
+
+	OUT.rgb = ambient + diffuse + specular + totalLightContribution;
 	OUT.a = 1.0f;
 
 	return OUT;
@@ -178,15 +241,15 @@ VS_OUTPUT vertex_shaderSL( VS_INPUT IN )
 	VS_OUTPUT OUT = (VS_OUTPUT)0;
 
 	float4x4 skinTransform = (float4x4)0;
-	skinTransform += BoneTransforms[IN.BoneIndices.x] * IN.BoneWeights.x;
+		skinTransform += BoneTransforms[IN.BoneIndices.x] * IN.BoneWeights.x;
 	skinTransform += BoneTransforms[IN.BoneIndices.y] * IN.BoneWeights.y;
 	skinTransform += BoneTransforms[IN.BoneIndices.z] * IN.BoneWeights.z;
 	skinTransform += BoneTransforms[IN.BoneIndices.w] * IN.BoneWeights.w;
 
 	float4 position = mul( IN.ObjectPosition, skinTransform );
-	OUT.Position = mul( position, WorldViewProjection );
+		OUT.Position = mul( position, WorldViewProjection );
 	float4 normal = mul( float4(IN.Normal, 0), skinTransform );
-	OUT.Normal = normalize( mul( normal, World ).xyz );
+		OUT.Normal = normalize( mul( normal, World ).xyz );
 	OUT.WorldPosition = mul( IN.ObjectPosition, World ).xyz;
 	OUT.TextureCoordinate = get_corrected_texture_coordinate( IN.TextureCoordinate );
 
@@ -227,7 +290,8 @@ float4 pixel_shaderSL( VS_OUTPUT IN ) : SV_Target
 		spotFactor = smoothstep( SpotLightOuterAngle, SpotLightInnerAngle, lightAngle );
 	}
 
-	OUT.rgb = ambient + (spotFactor * (diffuse + specular));
+
+	OUT.rgb = (ambient + (spotFactor * (diffuse + specular)));// + totalLightContribution;
 	OUT.a = 1.0f;
 
 	return OUT;
@@ -241,9 +305,9 @@ technique11 main11
 {
 	pass p0
 	{
-		SetVertexShader( CompileShader(vs_5_0, vertex_shader()) );
+		SetVertexShader( CompileShader(vs_5_0, vertex_shaderPL()) );
 		SetGeometryShader( NULL );
-		SetPixelShader( CompileShader(ps_5_0, pixel_shader()) );
+		SetPixelShader( CompileShader(ps_5_0, pixel_shaderPL()) );
 	}
 	pass p1
 	{
@@ -256,5 +320,11 @@ technique11 main11
 		SetVertexShader( CompileShader(vs_5_0, vertex_shaderSL()) );
 		SetGeometryShader( NULL );
 		SetPixelShader( CompileShader(ps_5_0, pixel_shaderSL()) );
+	}
+	pass p4
+	{
+		SetVertexShader( CompileShader(vs_5_0, vertex_shaderPL()) );
+		SetGeometryShader( NULL );
+		SetPixelShader( CompileShader(ps_5_0, pixel_shaderPLW()) );
 	}
 }

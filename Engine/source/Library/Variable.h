@@ -32,6 +32,8 @@ namespace Library
         const D3DX11_EFFECT_TYPE_DESC& TypeDesc() const;
         const std::string& Name() const;
 
+		Variable operator[]( UINT index );
+
         Variable& operator<<(CXMMATRIX value);
         Variable& operator<<(ID3D11ShaderResourceView* value);
         Variable& operator<<(FXMVECTOR value);
@@ -41,7 +43,7 @@ namespace Library
 		Variable& operator<<(const std::vector<XMFLOAT4X4>& values);
 
     private:
-        Variable(const Variable& rhs);
+        //Variable(const Variable& rhs);
         Variable& operator=(const Variable& rhs);
 
         Effect& mEffect;

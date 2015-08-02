@@ -26,6 +26,7 @@
 #include "SkinnedModelMaterial.h"
 #include "SpotLightSkinnedModelMaterial.h"
 #include "DirectionalLightSkinnedModelMaterial.h"
+#include "UltimateSkinnedModelMaterial.h"
 #include "VectorHelper.h"
 #include "ColorHelper.h"
 #include "AnimationPlayer.h"
@@ -104,6 +105,7 @@ namespace Rendering
 				mPLColorVectors[mNumPointLights] = mComponents.at( i )->As<PointLight>()->ColorVector();
 				mPLPosVectors[mNumPointLights] = mComponents.at( i )->As<PointLight>()->PositionVector();
 				mPointLightCVs[mNumPointLights] = mComponents.at( i )->As<PointLight>()->Color();
+				mPointLights.push_back( mComponents.at( i )->As<PointLight>());
 				//mLightType = PointLightType;
 				mNumPointLights++;
 			}
@@ -138,7 +140,7 @@ namespace Rendering
 		// Initialize the material
 		mEffect = new Effect( *mGame );
 		mEffect->LoadCompiledEffect( L"Content\\Effects\\SkinnedModel.cso" );
-		mMaterial = new SkinnedModelMaterial();
+		mMaterial = new UltimateSkinnedModelMaterial();
 		mMaterial->Initialize( *mEffect );
 		for ( int i = 0; i < mNumDirLights; i++ )
 		{
@@ -288,18 +290,27 @@ namespace Rendering
 			direct3DDeviceContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
 			direct3DDeviceContext->IASetIndexBuffer( indexBuffer, DXGI_FORMAT_R32_UINT, 0 );
 
-			/*mMaterial->WorldViewProjection() << wvp;
+			mMaterial->WorldViewProjection() << wvp;
 			mMaterial->World() << worldMatrix;
 			mMaterial->SpecularColor() << specularColor;
 			mMaterial->SpecularPower() << mSpecularPower;
 			mMaterial->AmbientColor() << ambientColor;
-			mMaterial->LightColor() << mColorVector;
-			mMaterial->LightPosition() << mLightPositionVector;
-			mMaterial->LightRadius() << 500000.0f;
+			//mMaterial->LightColor() << mColorVector;
+			//mMaterial->LightPosition() << mLightPositionVector;
+			//mMaterial->LightRadius() << 500000.0f;
 			mMaterial->ColorTexture() << colorTexture;
 			mMaterial->CameraPosition() << mCamera->PositionVector();
 			mMaterial->BoneTransforms() << mAnimationPlayer->BoneTransforms();
-			*/
+			
+			for ( int i = 0; i < mPointLights.size(); i++ )
+			{
+				PointLight* pointLight = mPointLights[i];
+				mMaterial->inited = true;
+				mMaterial->LightPosition() << pointLight->PositionVector();
+				//mMaterial->PointLights[i]->Position << pointLight->PositionVector();
+				//mMaterial->PointLights[i]->Radius << 50.0f;//pointLight->Radius();
+				//mMaterial->PointLights[i]->Color << pointLight->ColorVector();
+			}
 
 			for ( int j = 0; j < mNumDirLights; j++ )
 			{
@@ -329,7 +340,7 @@ namespace Rendering
 				mSpotLightMats[i]->WorldViewProjection() << wvp;
 				mSpotLightMats[i]->World() << worldMatrix;
 				mSpotLightMats[i]->SpecularColor() << specularColor;
-				//mSpotLightMats[i]->SpecularPower() << specularColor;
+				mSpotLightMats[i]->SpecularPower() << mSpecularPower;
 				mSpotLightMats[i]->AmbientColor() << ambientColor;
 				mSpotLightMats[i]->SpotLightInnerAngle() << mSLInnerRadia[i];
 				mSpotLightMats[i]->SpotLightOuterAngle() << mSLOuterRadia[i];

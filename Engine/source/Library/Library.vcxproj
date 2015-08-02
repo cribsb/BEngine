@@ -79,6 +79,7 @@
     <ClInclude Include="SkyboxMaterial.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="Technique.h" />
+    <ClInclude Include="UltimateSkinnedModelMaterial.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Variable.h" />
     <ClInclude Include="VectorHelper.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="SkyboxMaterial.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="Technique.cpp" />
+    <ClCompile Include="UltimateSkinnedModelMaterial.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Variable.cpp" />
     <ClCompile Include="VectorHelper.cpp" />

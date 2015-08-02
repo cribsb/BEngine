@@ -15,6 +15,7 @@
 #pragma once
 
 #include "DrawableGameComponent.h"
+#include "UltimateSkinnedModelMaterial.h"
 #include "RenderStateHelper.h"
 #include "LuaScript.h"
 #include "../..\BulletPhysics/src/btBulletDynamicsCommon.h"
@@ -41,6 +42,7 @@ namespace DirectX
 {
 	class SpriteBatch;
 	class SpriteFont;
+	class UltimateSkinnedModelMaterial;
 }
 
 namespace Rendering
@@ -67,6 +69,7 @@ namespace Rendering
 		//std::vector<SkinnedModelMaterial*> mPointLightMats;
 		//std::vector<SkinnedModelMaterial*> mDirLightMats;
 		//std::vector<SkinnedModelMaterial*> mSpotLightMats;
+		std::vector<PointLight*> mPointLights;
 		SkinnedModelMaterial* mPointLightMats[150];
 		XMCOLOR mPointLightCVs[150];
 		XMVECTOR mPLColorVectors[150];
@@ -99,7 +102,7 @@ namespace Rendering
 		static const float LightMovementRate;
 
         Effect* mEffect;
-		SkinnedModelMaterial* mMaterial;
+		UltimateSkinnedModelMaterial* mMaterial;
 
 		Keyboard* mKeyboard;
 		XMCOLOR mAmbientColor;
